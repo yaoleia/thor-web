@@ -1,7 +1,7 @@
 const GlobalModel = {
   namespace: 'global',
   state: {
-    collapsed: false,
+    collapsed: !!window.localStorage.collapsed,
   },
   effects: {},
   reducers: {
@@ -11,6 +11,7 @@ const GlobalModel = {
       },
       { payload },
     ) {
+      window.localStorage.collapsed = payload || '';
       return { ...state, collapsed: payload };
     },
   },

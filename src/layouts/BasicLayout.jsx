@@ -76,6 +76,7 @@ const BasicLayout = (props) => {
   );
   return (
     <ProLayout
+      breakpoint={false}
       logo={logo}
       onCollapse={handleMenuCollapse}
       onMenuHeaderClick={() => history.push('/')}
