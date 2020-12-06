@@ -1,28 +1,8 @@
-import { Avatar, Card, Col, List, Row, Steps, Button, message } from 'antd';
+import { Steps, Button, message } from 'antd';
 import React, { useState, useEffect } from 'react';
-import { Link, connect } from 'umi';
-import moment from 'moment';
-import DashboardAnalysis from '@/pages/DashboardAnalysis';
-import DashboardMonitor from '@/pages/DashboardMonitor';
+import { connect } from 'umi';
 import PageHeader from '@/components/PageHeader';
-import EditableLinkGroup from './components/EditableLinkGroup';
 import styles from './style.less';
-import io from 'socket.io-client';
-
-const socket = io(SOCKETIO, {
-  query: {
-    rooms: 'admin',
-  },
-});
-socket.on('connect', () => {
-  console.log('connect!');
-});
-
-socket.on('res', (msg) => {
-  console.log(msg);
-});
-
-window.socket = socket;
 
 const { Step } = Steps;
 
@@ -38,138 +18,21 @@ const steps = [
   },
 ];
 
-const links = [
-  {
-    title: '操作一',
-    href: '',
-  },
-  {
-    title: '操作二',
-    href: '',
-  },
-  {
-    title: '操作三',
-    href: '',
-  },
-  {
-    title: '操作四',
-    href: '',
-  },
-  {
-    title: '操作五',
-    href: '',
-  },
-  {
-    title: '操作六',
-    href: '',
-  },
-];
-
-const ProjectWorkplace = ({ location: { query = {} }, history, currentUser }) => {
+const ProjectWorkplace = ({ location: { query = {} }, currentUser }) => {
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
-    const { pid } = query;
-    if (pid) {
-      document.title = `工作台 - ${pid}`;
-      return;
-    }
-
-    history.push('/projectlist');
+    // const { pid } = query;
+    // if (pid) {
+    //   document.title = `工作台 - ${pid}`;
+    //   return;
+    // }
+    // history.push('/projectlist');
   }, []);
-
-  const renderActivities = (item) => {
-    const events = item.template.split(/@\{([^{}]*)\}/gi).map((key) => {
-      if (item[key]) {
-        return (
-          <a href={item[key].link} key={item[key].name}>
-            {item[key].name}
-          </a>
-        );
-      }
-
-      return key;
-    });
-    return (
-      <List.Item key={item.id}>
-        <List.Item.Meta
-          avatar={<Avatar src={item.user.avatar} />}
-          title={
-            <span>
-              <a className={styles.username}>{item.user.name}</a>
-              &nbsp;
-              <span className={styles.event}>{events}</span>
-            </span>
-          }
-          description={
-            <span className={styles.datetime} title={item.updatedAt}>
-              {moment(item.updatedAt).fromNow()}
-            </span>
-          }
-        />
-      </List.Item>
-    );
-  };
 
   if (!currentUser || !currentUser.username) {
     return null;
   }
-
-  const Dataset = () => (
-    <Row gutter={24}>
-      <Col xl={16} lg={24} md={24} sm={24} xs={24}>
-        <Card
-          bodyStyle={{
-            padding: 0,
-          }}
-          bordered={false}
-          className={styles.activeCard}
-          title="动态"
-        >
-          <List
-            renderItem={(item) => renderActivities(item)}
-            className={styles.activitiesList}
-            size="large"
-          />
-        </Card>
-      </Col>
-      <Col xl={8} lg={24} md={24} sm={24} xs={24}>
-        <Card
-          style={{
-            marginBottom: 24,
-          }}
-          title="快速开始 / 便捷导航"
-          bordered={false}
-          bodyStyle={{
-            padding: 0,
-          }}
-        >
-          <EditableLinkGroup onAdd={() => {}} links={links} linkElement={Link} />
-        </Card>
-        <Card
-          style={{
-            marginBottom: 24,
-          }}
-          bordered={false}
-          title="XX 指数"
-        >
-          <div className={styles.chart}>chart</div>
-        </Card>
-        <Card
-          bodyStyle={{
-            paddingTop: 12,
-            paddingBottom: 12,
-          }}
-          bordered={false}
-          title="团队"
-        >
-          <div className={styles.members}>
-            <Row gutter={48}></Row>
-          </div>
-        </Card>
-      </Col>
-    </Row>
-  );
 
   return (
     <div>
@@ -205,9 +68,6 @@ const ProjectWorkplace = ({ location: { query = {} }, history, currentUser }) =>
           <Step key={item.title} title={item.title} />
         ))}
       </Steps>
-      {current === 0 && <Dataset />}
-      {current === 1 && <DashboardAnalysis />}
-      {current === 2 && <DashboardMonitor />}
     </div>
   );
 };

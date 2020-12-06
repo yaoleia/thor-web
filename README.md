@@ -22,7 +22,6 @@
 |-- src                                   # 开发目录
 │   |-- assets                            # 本地静态资源
 │   |-- components                        # 业务通用组件
-│   |-- e2e                               # 集成测试用例
 │   |-- layouts                           # 通用布局
 │   |-- models                            # 全局 dva model
 │   |-- pages                             # 业务页面入口和常用模板

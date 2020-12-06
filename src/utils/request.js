@@ -57,8 +57,6 @@ const request = extend({
 });
 
 request.use(async (ctx, next) => {
-  console.log(ctx.req);
   await next();
-  console.log(ctx.res);
 });
 export default request;

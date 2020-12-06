@@ -60,12 +60,6 @@ export default defineConfig({
               component: './DatasetList',
             },
             {
-              name: '模型',
-              icon: 'RadarChartOutlined',
-              path: '/modellist',
-              component: './ModelList',
-            },
-            {
               path: '/admin',
               name: '权限',
               icon: 'crown',

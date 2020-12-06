@@ -1,9 +1,5 @@
 import request from '@/utils/request';
 
-export async function query() {
-  return request('/api/users');
-}
-
 export async function putUser(params) {
   return request('/api/currentUser', {
     method: 'PUT',

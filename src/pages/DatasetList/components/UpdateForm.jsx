@@ -1,10 +1,6 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Form, Button, Input, Modal, Steps, Upload, message } from 'antd';
-import { InboxOutlined, PlusCircleOutlined } from '@ant-design/icons';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import update from 'immutability-helper';
-import { Card } from './Card';
+import { InboxOutlined } from '@ant-design/icons';
 
 const { Dragger } = Upload;
 const FormItem = Form.Item;
@@ -45,86 +41,10 @@ const UpdateForm = (props) => {
     }
   };
 
-  const Container = ({ onChange, value }) => {
-    const [cards, setCards] = useState(value.map((val, id) => ({ id, val })));
-    const moveCard = useCallback(
-      (dragIndex, hoverIndex) => {
-        const dragCard = cards[dragIndex];
-        setCards(
-          update(cards, {
-            $splice: [
-              [dragIndex, 1],
-              [hoverIndex, 0, dragCard],
-            ],
-          }),
-        );
-      },
-      [cards],
-    );
-
-    useEffect(() => {
-      onChange(cards.map((card) => card.val));
-    }, [cards]);
-
-    const inputChange = (val, id) => {
-      setCards((prevCards) => {
-        const cloneCards = [...prevCards];
-        const index = cloneCards.findIndex((card) => card.id === id);
-        cloneCards.splice(index, 1, { id, val });
-        return cloneCards;
-      });
-    };
-    const onDelete = (id) => {
-      setCards((prevCards) => {
-        const cloneCards = [...prevCards];
-        const index = cloneCards.findIndex((card) => card.id === id);
-        cloneCards.splice(index, 1);
-        return cloneCards;
-      });
-    };
-
-    const addLabel = () => {
-      setCards((prevCards) => {
-        let id = 0;
-        while (prevCards.find((card) => card.id === id)) {
-          id += 1;
-        }
-        return [...prevCards, { id, val: '' }];
-      });
-    };
-
-    const renderCard = (card, index) => {
-      return (
-        <Card
-          key={card.id}
-          index={index}
-          id={card.id}
-          text={card.val}
-          moveCard={moveCard}
-          onChange={inputChange}
-          onDelete={onDelete}
-        />
-      );
-    };
-    return (
-      <>
-        <Button type="text" shape="circle" onClick={addLabel} icon={<PlusCircleOutlined />} />
-        <DndProvider backend={HTML5Backend}>
-          {cards.map((card, i) => renderCard(card, i))}
-        </DndProvider>
-      </>
-    );
-  };
-
   const renderContent = () => {
     if (currentStep === 1) {
-      return (
-        <FormItem name="labels" label="标签列表">
-          <Container />
-        </FormItem>
-      );
+      return <FormItem label="标签列表"></FormItem>;
     }
-
     if (currentStep === 2) {
       return (
         <Dragger
