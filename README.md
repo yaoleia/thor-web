@@ -30,7 +30,6 @@
 │   |-- locales                           # 国际化资源
 │   |-- global.less                       # 全局样式
 │   `-- global.ts                         # 全局 JS
-|-- tests                                 # 测试工具
 |-- package.json                          # 项目依赖以及打包配置
 `-- README.md                             # 项目说明文档
 ```

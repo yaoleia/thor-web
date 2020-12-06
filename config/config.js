@@ -60,29 +60,6 @@ export default defineConfig({
               component: './DatasetList',
             },
             {
-              path: '/admin',
-              name: '权限',
-              icon: 'crown',
-              component: './Admin',
-              authority: ['admin'],
-              routes: [
-                {
-                  path: '/admin/sub-page',
-                  name: 'sub-page',
-                  icon: 'smile',
-                  component: './ProjectList',
-                  authority: ['admin'],
-                },
-              ],
-            },
-            {
-              name: '个人设置',
-              icon: 'smile',
-              hideInMenu: true,
-              path: '/accountsettings',
-              component: './AccountSettings',
-            },
-            {
               name: '工作台',
               icon: 'ProjectOutlined',
               path: '/projectworkplace',
@@ -99,6 +76,29 @@ export default defineConfig({
               headerRender: false,
               hideMenu: true,
               hideInMenu: true,
+            },
+            // {
+            //   path: '/admin',
+            //   name: '权限',
+            //   icon: 'crown',
+            //   component: './Admin',
+            //   authority: ['admin'],
+            //   routes: [
+            //     {
+            //       path: '/admin/sub-page',
+            //       name: 'sub-page',
+            //       icon: 'smile',
+            //       component: './ProjectList',
+            //       authority: ['admin'],
+            //     },
+            //   ],
+            // },
+            {
+              name: '个人设置',
+              icon: 'smile',
+              hideInMenu: true,
+              path: '/accountsettings',
+              component: './AccountSettings',
             },
             {
               component: './404',
