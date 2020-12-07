@@ -4,6 +4,8 @@ import { connect } from 'umi';
 import io from 'socket.io-client';
 import { Select, Form, message } from 'antd';
 import { bindDeviceModel, queryDevice, queryModel } from '@/services/bind';
+import ProCard from '@ant-design/pro-card';
+import ProDescriptions from '@ant-design/pro-descriptions';
 import styles from './style.less';
 
 class Runtime extends React.Component {
@@ -109,9 +111,10 @@ class Runtime extends React.Component {
   };
 
   render() {
+    const product = this.state.ioResponseData;
     return (
       <div className={styles.runtimeContainer}>
-        <Form layout="inline">
+        <Form layout="inline" className={styles.formSelect}>
           <Form.Item label="运行设备">
             <Select
               style={{ width: '200px' }}
@@ -145,7 +148,18 @@ class Runtime extends React.Component {
             </Select>
           </Form.Item>
         </Form>
-        <Fabric values={this.state.ioResponseData} />
+        <div className={styles.fabricContainer}>
+          <ProCard title="" colSpan="20%" className={styles.leftMsg}>
+            <ProDescriptions column={1} title="展示列表">
+              <ProDescriptions.Item label="uid">{product.uid}</ProDescriptions.Item>
+              <ProDescriptions.Item label="缺损">
+                {(product.defect_items && product.defect_items.length) || 0}
+              </ProDescriptions.Item>
+              <ProDescriptions.Item label="创建时间">{product.time}</ProDescriptions.Item>
+            </ProDescriptions>
+          </ProCard>
+          <Fabric product={product} className={styles.canvasContainer} />
+        </div>
       </div>
     );
   }

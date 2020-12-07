@@ -1,23 +1,21 @@
 import React, { createRef } from 'react';
 import { fabric } from 'fabric';
-import ProCard from '@ant-design/pro-card';
-import ProDescriptions from '@ant-design/pro-descriptions';
-import styles from './style.less';
-
 class Fabric extends React.Component {
   containerRef = createRef();
-  state = {
-    canvas: '',
-    product: {},
-  };
 
   componentDidMount() {
     this.init();
+    window.addEventListener('resize', this.resize, {
+      passive: true,
+    });
   }
 
-  UNSAFE_componentWillReceiveProps({ values: product }) {
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.resize);
+  }
+
+  UNSAFE_componentWillReceiveProps({ product }) {
     this.canvasDraw(product);
-    this.setState({ product });
   }
 
   getInner = () => {
@@ -30,7 +28,7 @@ class Fabric extends React.Component {
 
   canvasDraw = (product) => {
     const { thumbnail_url } = product;
-    const { canvas } = this.state;
+    const { canvas } = this;
     if (!thumbnail_url || !canvas) return;
     const image = new Image();
     image.onload = () => {
@@ -48,15 +46,25 @@ class Fabric extends React.Component {
         top: image.clientTop,
       });
       this.addPoint(product);
-      this.state.canvas.requestRenderAll();
+      this.canvas.requestRenderAll();
     };
     image.src = thumbnail_url;
   };
 
-  setZoom(params) {
-    const { canvas } = this.state;
+  resize = () => {
+    if (this.resizeTimer) window.clearTimeout(this.resizeTimer);
+    this.resizeTimer = setTimeout(() => {
+      this.resizeTimer = null;
+      this.setZoom();
+    }, 100);
+  };
+
+  setZoom = (params = this.canvas.item(0)) => {
+    const { canvas } = this;
     let zoom = 1;
-    const { height: eleHeight, width: eleWidth } = this.getInner();
+    const inner = this.getInner();
+    if (!params) params = inner;
+    const { height: eleHeight, width: eleWidth } = inner;
     const rate = eleWidth / eleHeight;
     const imgRate = params.width / params.height;
     const ratio = null ? imgRate < rate : imgRate > rate;
@@ -76,7 +84,7 @@ class Fabric extends React.Component {
         (params.height * zoom - eleHeight) * 0.5 +
         (Number.isNaN(params.top * zoom) ? 0 : params.top * zoom),
     });
-  }
+  };
 
   init() {
     const canvas = new fabric.Canvas('canvas', {
@@ -90,11 +98,11 @@ class Fabric extends React.Component {
       ...this.getInner(),
     });
     this.mouseFunc(canvas);
-    this.setState({ canvas });
+    this.canvas = canvas;
   }
 
   addPoint({ defect_items = [] }) {
-    const array = defect_items.forEach((item) => {
+    const array = defect_items.map((item) => {
       const temp = this.minValue(item.points);
       const tempValue = item.points.map((item1) => {
         const res = { x: item1[0], y: item1[1] };
@@ -109,7 +117,7 @@ class Fabric extends React.Component {
       });
     });
     if (array.length) {
-      this.state.canvas.add(...array);
+      this.canvas.add(...array);
     }
   }
 
@@ -149,7 +157,7 @@ class Fabric extends React.Component {
     });
   };
   clearFunc = (e) => {
-    const { canvas } = this.state;
+    const { canvas } = this;
     canvas.getObjects().forEach((item, index) => {
       if (index > 0) {
         item.visible = e;
@@ -159,21 +167,9 @@ class Fabric extends React.Component {
   };
 
   render() {
-    const { product } = this.state;
     return (
-      <div className={styles.fabricContainer}>
-        <ProCard title="" colSpan="20%" className={styles.leftMsg}>
-          <ProDescriptions column={1} title="展示列表" tooltip="">
-            <ProDescriptions.Item label="uid">{product.uid}</ProDescriptions.Item>
-            <ProDescriptions.Item label="缺损">
-              {(product.defect_items && product.defect_items.length) || 0}
-            </ProDescriptions.Item>
-            <ProDescriptions.Item label="创建时间">{product.time}</ProDescriptions.Item>
-          </ProDescriptions>
-        </ProCard>
-        <div ref={this.containerRef} className={styles.canvasContainer}>
-          <canvas id="canvas" />
-        </div>
+      <div ref={this.containerRef} {...this.props}>
+        <canvas id="canvas" />
       </div>
     );
   }

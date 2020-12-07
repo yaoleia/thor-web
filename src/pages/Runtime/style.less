@@ -1,5 +1,25 @@
 @import '~antd/es/style/themes/default.less';
 
 .runtimeContainer {
-  height: calc(100% - 32px);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  .formSelect {
+    margin-bottom: 15px;
+  }
+  .fabricContainer {
+    display: flex;
+    height: calc(100vh - 143px);
+    background: #141414;
+    .leftMsg {
+      width: 20%;
+      min-width: 250px;
+      background: #141414;
+    }
+    .canvasContainer {
+      flex-grow: 1;
+      flex-shrink: 1;
+      overflow: hidden;
+    }
+  }
 }
