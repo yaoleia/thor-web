@@ -6,6 +6,13 @@
   height: 100%;
   .formSelect {
     margin-bottom: 15px;
+    :global {
+      .ant-select-selection-item {
+        .ant-tag {
+          display: none;
+        }
+      }
+    }
   }
   .fabricContainer {
     display: flex;

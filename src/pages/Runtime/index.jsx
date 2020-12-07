@@ -2,7 +2,7 @@ import React from 'react';
 import Fabric from '@/components/Fabric/fabric';
 import { connect } from 'umi';
 import io from 'socket.io-client';
-import { Select, Form, message } from 'antd';
+import { Select, Form, message, Tag } from 'antd';
 import { bindDeviceModel, queryDevice, queryModel } from '@/services/bind';
 import ProCard from '@ant-design/pro-card';
 import ProDescriptions from '@ant-design/pro-descriptions';
@@ -120,12 +120,14 @@ class Runtime extends React.Component {
               style={{ width: '200px' }}
               value={this.state.deviceValue}
               onChange={this.handleChange}
+              dropdownClassName="hasUid"
             >
               {this.state.deviceData &&
                 this.state.deviceData.map((item) => {
                   return (
                     <Select.Option value={item.uid} key={item.uid}>
-                      {item.name}
+                      <span>{item.name}</span>
+                      <Tag>{item.uid}</Tag>
                     </Select.Option>
                   );
                 })}
@@ -137,11 +139,13 @@ class Runtime extends React.Component {
               style={{ width: '200px' }}
               value={this.state.modelValue}
               onChange={this.modelhandleChange}
+              dropdownClassName="hasUid"
             >
               {this.state.modelData.map((item) => {
                 return (
                   <Select.Option value={item.uid} key={item.uid}>
-                    {item.name}
+                    <span>{item.name}</span>
+                    <Tag>{item.uid}</Tag>
                   </Select.Option>
                 );
               })}
