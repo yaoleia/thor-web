@@ -45,13 +45,13 @@ export default defineConfig({
           routes: [
             {
               path: '/',
-              redirect: '/projectlist',
+              redirect: '/runtime',
             },
             {
-              name: '项目',
+              name: '运行检测',
               icon: 'ProjectOutlined',
-              path: '/projectlist',
-              component: './ProjectList',
+              path: '/runtime',
+              component: './Runtime',
             },
             {
               name: '数据集',
@@ -88,7 +88,7 @@ export default defineConfig({
             //       path: '/admin/sub-page',
             //       name: 'sub-page',
             //       icon: 'smile',
-            //       component: './ProjectList',
+            //       component: './Runtime',
             //       authority: ['admin'],
             //     },
             //   ],

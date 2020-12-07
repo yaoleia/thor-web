@@ -27,7 +27,7 @@ const ProjectWorkplace = ({ location: { query = {} }, currentUser }) => {
     //   document.title = `工作台 - ${pid}`;
     //   return;
     // }
-    // history.push('/projectlist');
+    // history.push('/runtime');
   }, []);
 
   if (!currentUser || !currentUser.username) {
