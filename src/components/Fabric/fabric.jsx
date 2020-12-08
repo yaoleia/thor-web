@@ -26,29 +26,46 @@ class Fabric extends React.Component {
     };
   };
 
-  canvasDraw = (product) => {
+  clearImgElement = (loaded) => {
+    if (!this.image) return;
+    this.image.onload = null;
+    this.image.onerror = null;
+    if (!loaded && this.reject) {
+      this.reject();
+    }
+    this.reject = null;
+    this.image = null;
+  };
+
+  canvasDraw = async (product) => {
     const { thumbnail_url } = product;
     const { canvas } = this;
     if (!thumbnail_url || !canvas) return;
-    const image = new Image();
-    image.onload = () => {
-      const imageOnloadFbric = new fabric.Image(image, {
-        width: image.width,
-        height: image.height,
-        selectable: false,
-      });
-      canvas.clear();
-      canvas.add(imageOnloadFbric);
-      this.setZoom({
-        width: image.width,
-        height: image.height,
-        left: image.clientLeft,
-        top: image.clientTop,
-      });
-      this.addPoint(product);
-      this.canvas.requestRenderAll();
-    };
-    image.src = thumbnail_url;
+    this.clearImgElement();
+    await new Promise((resolve, reject) => {
+      this.reject = reject;
+      const image = new Image();
+      this.image = image;
+      image.onload = () => {
+        const imageOnloadFbric = new fabric.Image(image, {
+          width: image.width,
+          height: image.height,
+          selectable: false,
+        });
+        canvas.clear();
+        canvas.add(imageOnloadFbric);
+        this.setZoom({
+          width: image.width,
+          height: image.height,
+        });
+        this.addPolygon(product);
+        this.canvas.requestRenderAll();
+        this.clearImgElement(true);
+        resolve();
+      };
+      image.onerror = () => this.clearImgElement();
+      image.src = thumbnail_url;
+    });
   };
 
   resize = () => {
@@ -101,7 +118,7 @@ class Fabric extends React.Component {
     this.canvas = canvas;
   }
 
-  addPoint({ defect_items = [] }) {
+  addPolygon({ defect_items = [] }) {
     const array = defect_items.map((item) => {
       const temp = this.minValue(item.points);
       const tempValue = item.points.map((item1) => {
@@ -114,6 +131,7 @@ class Fabric extends React.Component {
         fill: item.fill_color,
         stroke: item.line_color,
         strokeWidth: 2,
+        selectable: false,
       });
     });
     if (array.length) {
