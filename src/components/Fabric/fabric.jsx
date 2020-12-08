@@ -15,6 +15,11 @@ class Fabric extends React.Component {
   }
 
   UNSAFE_componentWillReceiveProps({ product }) {
+    if (!product.uid && this.canvas) {
+      this.clearImgElement();
+      this.canvas.clear();
+      return;
+    }
     this.canvasDraw(product);
   }
 

@@ -1,18 +1,18 @@
 import React from 'react';
 import Fabric from '@/components/Fabric/fabric';
 import { connect } from 'umi';
+import _ from 'lodash';
 import io from 'socket.io-client';
-import { Select, Form, message, Tag } from 'antd';
+import { Select, Form, message, Tag, Card, Descriptions } from 'antd';
 import { bindDeviceModel, queryDevice, queryModel } from '@/services/bind';
 import ProCard from '@ant-design/pro-card';
-import ProDescriptions from '@ant-design/pro-descriptions';
+import moment from 'moment';
 import styles from './style.less';
 
 class Runtime extends React.Component {
   state = {
     ioResponseData: {},
     deviceData: [],
-    socket: '',
     deviceValue: '',
     modelData: [],
     modelValue: '',
@@ -20,45 +20,31 @@ class Runtime extends React.Component {
   componentDidMount() {
     this.init();
   }
-  init(param) {
-    new Promise((resolve) => {
-      resolve(queryModel());
-    }).then((e) => {
+  async init(device_id) {
+    try {
+      const [models, devices] = await Promise.all([queryModel(), queryDevice()]);
+      let selectIndex = devices.data.findIndex((item) => item.uid === device_id);
+      selectIndex = selectIndex === -1 ? 0 : selectIndex;
+      const currentDevice = devices.data[selectIndex];
+      device_id = _.get(currentDevice, 'uid');
       this.setState({
-        modelData: e.data,
-        modelValue: '',
+        modelData: models.data,
+        deviceData: devices.data,
+        deviceValue: device_id,
+        modelValue: _.get(currentDevice, 'style.uid'),
       });
-    });
-    new Promise((resolve) => {
-      resolve(queryDevice());
-    }).then((e) => {
-      let selectIndex = 0;
-      if (param) {
-        selectIndex = this.state.deviceData.findIndex((item) => item.uid === param);
-      }
-      let tempUid = '';
-      if (e.data[selectIndex].style) {
-        tempUid = e.data[selectIndex].style.uid;
-      }
-      this.setState({
-        deviceData: e.data,
-        deviceValue: e.data[selectIndex].uid,
-        modelValue: tempUid,
-      });
-      this.socketCreate(e.data[selectIndex].uid);
-    });
+      this.socketCreate(device_id);
+    } catch (error) {
+      message.error(error);
+    }
   }
-  socketCreate = (param) => {
-    if (this.state.socket) {
-      this.state.socket.disconnect();
+  socketCreate = (rooms) => {
+    if (this.socket) {
+      this.socket.disconnect();
     }
     const socket = io(SOCKETIO, {
-      query: {
-        rooms: param,
-      },
+      query: { rooms },
     });
-
-    window.socket = socket;
 
     socket.on('res', (res) => {
       const { data } = res;
@@ -68,50 +54,40 @@ class Runtime extends React.Component {
         });
       }
     });
-    this.setState({
-      socket,
-    });
+    window.socket = socket;
+    this.socket = socket;
   };
-  handleChange = (value) => {
-    console.log(`selected ${value}`);
-    this.socketCreate(value);
+  handleChange = (device_id) => {
+    this.socketCreate(device_id);
+    const device = this.state.deviceData.find((item) => item.uid === device_id);
     this.setState({
-      deviceValue: value,
+      deviceValue: device_id,
       ioResponseData: {},
+      modelValue: _.get(device, 'style.uid'),
     });
-    const itemValue = this.state.deviceData.find((item) => item.uid === value);
-    if (itemValue.style) {
-      this.setState({
-        modelValue: itemValue.style.uid,
-      });
-    } else {
-      this.setState({
-        modelValue: '',
-      });
-    }
   };
 
-  modelhandleChange = (value) => {
-    console.log(`modelhandleChangeselected ${value}`);
-    this.setState({
-      modelValue: value,
-    });
-    const params = {
+  modelhandleChange = async (model_id) => {
+    await bindDeviceModel({
       device_id: this.state.deviceValue,
-      style_id: value,
-    };
-    new Promise((resolve) => {
-      resolve(bindDeviceModel(params));
-    }).then((e) => {
-      if (e.device.name) {
-        message.success('绑定成功');
-      }
-      this.init(this.state.deviceValue);
+      style_id: model_id,
     });
+    message.success('型号更改成功！');
+    this.setState({
+      modelValue: model_id,
+    });
+  };
+
+  getGroup = (arr) => {
+    if (!Array.isArray(arr) || !arr.length) return;
+    return _.groupBy(arr, 'label');
   };
 
   render() {
     const product = this.state.ioResponseData;
+    const { defect_items, size_items, size_alarm, defect_alarm } = product;
+    const defect_detail = this.getGroup(defect_items);
+    const size_detail = this.getGroup(size_items);
     return (
       <div className={styles.runtimeContainer}>
         <Form layout="inline" className={styles.formSelect}>
@@ -154,13 +130,48 @@ class Runtime extends React.Component {
         </Form>
         <div className={styles.fabricContainer}>
           <ProCard title="" colSpan="20%" className={styles.leftMsg}>
-            <ProDescriptions column={1} title="展示列表">
-              <ProDescriptions.Item label="uid">{product.uid}</ProDescriptions.Item>
-              <ProDescriptions.Item label="缺损">
-                {(product.defect_items && product.defect_items.length) || 0}
-              </ProDescriptions.Item>
-              <ProDescriptions.Item label="创建时间">{product.time}</ProDescriptions.Item>
-            </ProDescriptions>
+            <Descriptions column={1} title="检测结果">
+              {product.uid && (
+                <>
+                  <Descriptions.Item label="ID">{product.uid}</Descriptions.Item>
+                  <Descriptions.Item label="检测时间">
+                    {moment(product.time).format('YYYY-MM-DD HH:mm:ss')}
+                  </Descriptions.Item>
+                  {defect_detail && (
+                    <Descriptions.Item className={styles.defectDetail} label="瑕疵缺陷">
+                      {Object.keys(defect_detail).map((defect) => (
+                        <Tag key={defect}>
+                          {defect}: {defect_detail[defect].length}
+                        </Tag>
+                      ))}
+                    </Descriptions.Item>
+                  )}
+                  {size_detail && (
+                    <Descriptions.Item className={styles.defectDetail} label="尺寸缺陷">
+                      {Object.keys(size_detail).map((size) => (
+                        <Tag key={size}>
+                          {size}: {size_detail[size].length}
+                        </Tag>
+                      ))}
+                    </Descriptions.Item>
+                  )}
+                  {typeof defect_alarm === 'boolean' && (
+                    <Descriptions.Item>
+                      <Card className={defect_alarm ? styles.alarm : styles.ok}>
+                        瑕疵: {defect_alarm ? 'NG' : 'OK'}
+                      </Card>
+                    </Descriptions.Item>
+                  )}
+                  {typeof size_alarm === 'boolean' && (
+                    <Descriptions.Item>
+                      <Card className={size_alarm ? styles.alarm : styles.ok}>
+                        尺寸: {size_alarm ? 'NG' : 'OK'}
+                      </Card>
+                    </Descriptions.Item>
+                  )}
+                </>
+              )}
+            </Descriptions>
           </ProCard>
           <Fabric product={product} className={styles.canvasContainer} />
         </div>

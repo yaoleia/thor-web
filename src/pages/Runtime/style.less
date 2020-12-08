@@ -22,6 +22,31 @@
       width: 20%;
       min-width: 250px;
       background: #141414;
+      .alarm {
+        background: #d22a42;
+      }
+      .ok {
+        background: #00ba80;
+      }
+      :global {
+        .ant-card {
+          width: 100%;
+          font-size: 23px;
+          text-align: center;
+        }
+      }
+      .defectDetail {
+        :global {
+          .ant-descriptions-item-content {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            .ant-tag {
+              margin-bottom: 12px;
+            }
+          }
+        }
+      }
     }
     .canvasContainer {
       flex-grow: 1;
