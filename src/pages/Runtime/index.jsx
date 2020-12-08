@@ -20,7 +20,7 @@ class Runtime extends React.Component {
   componentDidMount() {
     this.init();
   }
-  async init(device_id) {
+  async init(device_id = localStorage.currentDevice) {
     try {
       const [models, devices] = await Promise.all([queryModel(), queryDevice()]);
       let selectIndex = devices.data.findIndex((item) => item.uid === device_id);
@@ -39,6 +39,7 @@ class Runtime extends React.Component {
     }
   }
   socketCreate = (rooms) => {
+    localStorage.currentDevice = rooms;
     if (this.socket) {
       this.socket.disconnect();
     }
@@ -47,11 +48,21 @@ class Runtime extends React.Component {
     });
 
     socket.on('res', (res) => {
-      const { data } = res;
-      if (data.action === 'product') {
-        this.setState({
-          ioResponseData: data.payload,
-        });
+      const {
+        data: { payload, action },
+      } = res;
+      switch (action) {
+        case 'product':
+          this.setState({
+            ioResponseData: payload,
+          });
+          break;
+        default:
+          message.error({
+            content: _.get(payload, 'msg.code') || _.get(payload, 'msg.error') || payload.msg,
+            key: 'wsError',
+          });
+          break;
       }
     });
     window.socket = socket;
@@ -72,7 +83,7 @@ class Runtime extends React.Component {
       device_id: this.state.deviceValue,
       style_id: model_id,
     });
-    message.success('型号更改成功！');
+    message.success({ content: '型号更改成功！', key: 'changeModel' });
     this.setState({
       modelValue: model_id,
     });
