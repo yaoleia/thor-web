@@ -54,6 +54,12 @@ export default defineConfig({
               component: './Runtime',
             },
             {
+              name: '生产记录',
+              icon: 'ProjectOutlined',
+              path: '/record',
+              component: './record',
+            },
+            {
               name: '数据集',
               icon: 'DatabaseOutlined',
               path: '/datasetlist',
@@ -128,6 +134,6 @@ export default defineConfig({
     basePath: '/',
   },
   define: {
-    SOCKETIO: 'http://localhost:7001/',
+    SOCKETIO: 'http://10.18.144.239:7001/',
   },
 });
