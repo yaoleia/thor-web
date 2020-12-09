@@ -128,6 +128,6 @@ export default defineConfig({
     basePath: '/',
   },
   define: {
-    SOCKETIO: 'http://localhost:7001/',
+    SOCKETIO: 'http://10.18.144.239:7001/',
   },
 });
