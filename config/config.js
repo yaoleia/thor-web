@@ -115,7 +115,7 @@ export default defineConfig({
     },
   ],
   plugins: ['@alitajs/keep-alive'],
-  keepalive: ['/datasetlist'],
+  keepalive: ['/datasetlist', '/runtime'],
   // Theme for antd: https://ant.design/docs/react/customize-theme-cn
   theme: {
     // ...darkTheme,

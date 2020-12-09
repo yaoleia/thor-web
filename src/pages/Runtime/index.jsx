@@ -20,6 +20,11 @@ class Runtime extends React.Component {
   componentDidMount() {
     this.init();
   }
+
+  componentWillUnmount() {
+    this.wsDisconnect();
+  }
+
   async init(device_id = localStorage.currentDevice) {
     try {
       const [models, devices] = await Promise.all([queryModel(), queryDevice()]);
@@ -38,11 +43,16 @@ class Runtime extends React.Component {
       message.error(error);
     }
   }
-  socketCreate = (rooms) => {
-    localStorage.currentDevice = rooms;
+
+  wsDisconnect = () => {
     if (this.socket) {
       this.socket.disconnect();
     }
+  };
+
+  socketCreate = (rooms) => {
+    this.wsDisconnect();
+    localStorage.currentDevice = rooms;
     const socket = io(SOCKETIO, {
       query: { rooms },
     });
