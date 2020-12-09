@@ -56,7 +56,12 @@ class Runtime extends React.Component {
     const socket = io(SOCKETIO, {
       query: { rooms },
     });
-
+    socket.on('connect', () => {
+      console.log(`ws connected ${rooms} !`);
+    });
+    socket.on('disconnect', () => {
+      console.log(`ws closed ${rooms} !`);
+    });
     socket.on('res', (res) => {
       const {
         data: { payload, action },
