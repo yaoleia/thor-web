@@ -74,7 +74,7 @@ class BaseView extends Component {
   handleFinish = (values) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'user/fetch',
+      type: 'user/putCurrent',
       payload: { ...values },
     });
     message.success('个人设置保存成功！');

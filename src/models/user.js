@@ -1,4 +1,4 @@
-import { queryCurrent, putUser } from '@/services/user';
+import { getCurrent, putCurrent } from '@/services/user';
 
 const UserModel = {
   namespace: 'user',
@@ -7,16 +7,16 @@ const UserModel = {
     isLoading: false,
   },
   effects: {
-    *fetch({ payload }, { call, put }) {
-      const resp = yield call(putUser, payload);
+    *putCurrent({ payload }, { call, put }) {
+      const resp = yield call(putCurrent, payload);
       yield put({
         type: 'saveCurrentUser',
         payload: resp,
       });
     },
 
-    *fetchCurrent(_, { call, put }) {
-      const response = yield call(queryCurrent);
+    *getCurrent(_, { call, put }) {
+      const response = yield call(getCurrent);
       yield put({
         type: 'saveCurrentUser',
         payload: response,
