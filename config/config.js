@@ -54,6 +54,12 @@ export default defineConfig({
               component: './Runtime',
             },
             {
+              name: '生产记录',
+              icon: 'ProjectOutlined',
+              path: '/record',
+              component: './record',
+            },
+            {
               name: '数据集',
               icon: 'DatabaseOutlined',
               path: '/datasetlist',
