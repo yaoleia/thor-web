@@ -22,7 +22,7 @@ class Runtime extends React.Component {
   }
 
   componentWillUnmount() {
-    this.wsDisconnect();
+    this.wsClose();
   }
 
   async init(device_id = localStorage.currentDevice) {
@@ -44,14 +44,14 @@ class Runtime extends React.Component {
     }
   }
 
-  wsDisconnect = () => {
-    if (this.socket) {
-      this.socket.disconnect();
-    }
+  wsClose = () => {
+    if (!this.socket) return;
+    this.socket.close();
+    this.socket = null;
   };
 
   socketCreate = (rooms) => {
-    this.wsDisconnect();
+    this.wsClose();
     localStorage.currentDevice = rooms;
     const socket = io(SOCKETIO, {
       query: { rooms },
