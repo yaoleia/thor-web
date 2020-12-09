@@ -98,7 +98,7 @@ class Runtime extends React.Component {
   };
 
   render() {
-    const { devices, models } = this.props;
+    const { devices, models, loading } = this.props;
     const { product, device } = this.state;
     const { defect_items, size_items, size_alarm, defect_alarm } = product;
     const defect_detail = this.getGroup(defect_items);
@@ -109,6 +109,8 @@ class Runtime extends React.Component {
         <Form layout="inline" className={styles.formSelect}>
           <Form.Item label="运行设备">
             <Select
+              disabled={loading}
+              loading={loading}
               style={{ width: '200px' }}
               value={device.uid}
               onChange={this.handleChange}
@@ -127,6 +129,8 @@ class Runtime extends React.Component {
           </Form.Item>
           <Form.Item label="检测型号">
             <Select
+              disabled={loading}
+              loading={loading}
               placeholder="当前设备还未绑定型号"
               style={{ width: '200px' }}
               value={style_id}
@@ -196,7 +200,8 @@ class Runtime extends React.Component {
   }
 }
 
-export default connect(({ device, model }) => ({
+export default connect(({ device, model, loading }) => ({
   devices: device.devices,
   models: model.models,
+  loading: loading.models.device,
 }))(Runtime);
