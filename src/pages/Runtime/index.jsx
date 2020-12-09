@@ -4,18 +4,14 @@ import { connect } from 'umi';
 import _ from 'lodash';
 import io from 'socket.io-client';
 import { Select, Form, message, Tag, Card, Descriptions } from 'antd';
-import { bindDeviceModel, queryDevice, queryModel } from '@/services/bind';
 import ProCard from '@ant-design/pro-card';
 import moment from 'moment';
 import styles from './style.less';
 
 class Runtime extends React.Component {
   state = {
-    ioResponseData: {},
-    deviceData: [],
-    deviceValue: '',
-    modelData: [],
-    modelValue: '',
+    product: {},
+    device: {},
   };
   componentDidMount() {
     this.init();
@@ -25,20 +21,14 @@ class Runtime extends React.Component {
     this.wsClose();
   }
 
-  async init(device_id = localStorage.currentDevice) {
+  async init() {
     try {
-      const [models, devices] = await Promise.all([queryModel(), queryDevice()]);
-      let selectIndex = devices.data.findIndex((item) => item.uid === device_id);
+      const { devices } = this.props;
+      let selectIndex = devices.findIndex((item) => item.uid === localStorage.currentDevice);
       selectIndex = selectIndex === -1 ? 0 : selectIndex;
-      const currentDevice = devices.data[selectIndex];
-      device_id = _.get(currentDevice, 'uid');
-      this.setState({
-        modelData: models.data,
-        deviceData: devices.data,
-        deviceValue: device_id,
-        modelValue: _.get(currentDevice, 'style.uid'),
-      });
-      this.socketCreate(device_id);
+      const device = devices[selectIndex];
+      this.setState({ device });
+      this.socketCreate(device);
     } catch (error) {
       message.error(error);
     }
@@ -50,7 +40,7 @@ class Runtime extends React.Component {
     this.socket = null;
   };
 
-  socketCreate = (rooms) => {
+  socketCreate = ({ uid: rooms }) => {
     this.wsClose();
     localStorage.currentDevice = rooms;
     const socket = io(SOCKETIO, {
@@ -69,7 +59,7 @@ class Runtime extends React.Component {
       switch (action) {
         case 'product':
           this.setState({
-            ioResponseData: payload,
+            product: payload,
           });
           break;
         default:
@@ -84,23 +74,21 @@ class Runtime extends React.Component {
     this.socket = socket;
   };
   handleChange = (device_id) => {
-    this.socketCreate(device_id);
-    const device = this.state.deviceData.find((item) => item.uid === device_id);
+    const device = this.props.devices.find((item) => item.uid === device_id);
+    this.socketCreate(device);
     this.setState({
-      deviceValue: device_id,
-      ioResponseData: {},
-      modelValue: _.get(device, 'style.uid'),
+      device,
+      product: {},
     });
   };
 
-  modelhandleChange = async (model_id) => {
-    await bindDeviceModel({
-      device_id: this.state.deviceValue,
-      style_id: model_id,
-    });
-    message.success({ content: '型号更改成功！', key: 'changeModel' });
-    this.setState({
-      modelValue: model_id,
+  modelhandleChange = async (style_id) => {
+    this.props.dispatch({
+      type: 'device/bindModel',
+      payload: {
+        device_id: _.get(this.state, 'device.uid'),
+        style_id,
+      },
     });
   };
 
@@ -110,22 +98,24 @@ class Runtime extends React.Component {
   };
 
   render() {
-    const product = this.state.ioResponseData;
+    const { devices, models } = this.props;
+    const { product, device } = this.state;
     const { defect_items, size_items, size_alarm, defect_alarm } = product;
     const defect_detail = this.getGroup(defect_items);
     const size_detail = this.getGroup(size_items);
+    const style_id = _.get(device, 'style.uid');
     return (
       <div className={styles.runtimeContainer}>
         <Form layout="inline" className={styles.formSelect}>
           <Form.Item label="运行设备">
             <Select
               style={{ width: '200px' }}
-              value={this.state.deviceValue}
+              value={device.uid}
               onChange={this.handleChange}
               dropdownClassName="hasUid"
             >
-              {this.state.deviceData &&
-                this.state.deviceData.map((item) => {
+              {devices &&
+                devices.map((item) => {
                   return (
                     <Select.Option value={item.uid} key={item.uid}>
                       <span>{item.name}</span>
@@ -139,11 +129,11 @@ class Runtime extends React.Component {
             <Select
               placeholder="当前设备还未绑定型号"
               style={{ width: '200px' }}
-              value={this.state.modelValue}
+              value={style_id}
               onChange={this.modelhandleChange}
               dropdownClassName="hasUid"
             >
-              {this.state.modelData.map((item) => {
+              {models.map((item) => {
                 return (
                   <Select.Option value={item.uid} key={item.uid}>
                     <span>{item.name}</span>
@@ -206,4 +196,7 @@ class Runtime extends React.Component {
   }
 }
 
-export default connect(() => ({}))(Runtime);
+export default connect(({ device, model }) => ({
+  devices: device.devices,
+  models: model.models,
+}))(Runtime);

@@ -18,6 +18,12 @@ class SecurityLayout extends React.Component {
       dispatch({
         type: 'user/getCurrent',
       });
+      dispatch({
+        type: 'device/fetch',
+      });
+      dispatch({
+        type: 'model/fetch',
+      });
     }
   }
 
