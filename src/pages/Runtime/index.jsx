@@ -76,6 +76,7 @@ class Runtime extends React.Component {
   handleChange = (device_id) => {
     const device = this.props.devices.find((item) => item.uid === device_id);
     this.socketCreate(device);
+    this.selectDevice.blur();
     this.setState({
       device,
       product: {},
@@ -83,6 +84,7 @@ class Runtime extends React.Component {
   };
 
   modelhandleChange = async (style_id) => {
+    this.selectModel.blur();
     this.props.dispatch({
       type: 'device/bindModel',
       payload: {
@@ -109,8 +111,10 @@ class Runtime extends React.Component {
         <Form layout="inline" className={styles.formSelect}>
           <Form.Item label="运行设备">
             <Select
+              ref={(ref) => {
+                this.selectDevice = ref;
+              }}
               disabled={loading}
-              loading={loading}
               style={{ width: '200px' }}
               value={device.uid}
               onChange={this.handleChange}
@@ -129,6 +133,9 @@ class Runtime extends React.Component {
           </Form.Item>
           <Form.Item label="检测型号">
             <Select
+              ref={(ref) => {
+                this.selectModel = ref;
+              }}
               disabled={loading}
               loading={loading}
               placeholder="当前设备还未绑定型号"

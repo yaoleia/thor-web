@@ -15,7 +15,9 @@ const DeviceModel = {
     },
     *bindModel({ payload }, { call, put }) {
       const resp = yield call(bindDeviceModel, payload);
+      if (!resp) return;
       const { device, style } = resp;
+      if (!device || !device.uid) return;
       if (device && style) {
         device.style = style;
       }
