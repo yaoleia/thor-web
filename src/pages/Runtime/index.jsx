@@ -27,6 +27,7 @@ class Runtime extends React.Component {
       let selectIndex = devices.findIndex((item) => item.uid === localStorage.currentDevice);
       selectIndex = selectIndex === -1 ? 0 : selectIndex;
       const device = devices[selectIndex];
+      if (!device) return;
       this.setState({ device });
       this.socketCreate(device);
     } catch (error) {
@@ -115,8 +116,9 @@ class Runtime extends React.Component {
                 this.selectDevice = ref;
               }}
               disabled={loading}
+              placeholder="请选择运行设备"
               style={{ width: '200px' }}
-              value={device.uid}
+              value={device && device.uid}
               onChange={this.handleChange}
               dropdownClassName="hasUid"
             >
