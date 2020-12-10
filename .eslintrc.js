@@ -17,7 +17,5 @@ module.exports = {
     'import/no-extraneous-dependencies': 0,
     '@typescript-eslint/lines-between-class-members': 0,
     'react/jsx-boolean-value': 0,
-    'no-else-return': 0,
-    'prefer-template': 0,
   },
 };

@@ -24,6 +24,9 @@ class Fabric extends React.Component {
   }
 
   getInner = () => {
+    if (this.containerRef.current == null) {
+      return false;
+    }
     const { clientHeight, clientWidth } = this.containerRef.current;
     return {
       width: clientWidth,
@@ -121,6 +124,11 @@ class Fabric extends React.Component {
     });
     this.mouseFunc(canvas);
     this.canvas = canvas;
+
+    const { product } = this.props;
+    if (product && Object.keys(product).length) {
+      this.canvasDraw(product);
+    }
   }
 
   addPolygon({ defect_items = [] }) {

@@ -1,10 +1,11 @@
-import { Button, message, Input, Select } from 'antd';
+import { Button, message, Select, Modal, Divider } from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import moment from 'moment';
 import ProTable from '@ant-design/pro-table';
 import UpdateForm from './components/UpdateForm';
-import { queryRule, updateRecord, removeRule } from './service';
+import { queryRecord, updateRecord, removeRecord, getRecordById } from './service';
+import FabricContainer from '@/components/Fabric/fabricContainer';
 
 const { Option } = Select;
 
@@ -22,17 +23,15 @@ const handleRemove = async (selectedRows) => {
         return row.uid;
       })
       .join(',');
-    const res = await removeRule(deleteKey);
-    console.log('--deletedCount---');
-    console.log(res.deletedCount);
-    if (res.deletedCount > 0) {
+    const res = await removeRecord(deleteKey);
+    if (!(res.deletedCount > 0)) {
       hide();
-      message.success(`成功删除${res.deletedCount}条信息，即将刷新`);
-      return true;
-    } else {
       message.error('删除失败，请重试');
       return false;
     }
+    hide();
+    message.success(`成功删除${res.deletedCount}条信息，即将刷新`);
+    return true;
   } catch (error) {
     hide();
     message.error('删除失败，请重试');
@@ -42,7 +41,9 @@ const handleRemove = async (selectedRows) => {
 
 const TableList = () => {
   const [updateModalVisible, handleUpdateModalVisible] = useState(false);
+  const [detailModalVisible, handleDetailModalVisible] = useState(false);
   const [stepFormValues, setStepFormValues] = useState({});
+  const [detailValues, setDetailValues] = useState({});
   const actionRef = useRef();
   const [selectedRowsState, setSelectedRows] = useState([]);
   const columns = [
@@ -77,20 +78,8 @@ const TableList = () => {
       title: '创建时间',
       dataIndex: 'time',
       valueType: 'dateRange',
+      hideInForm: true,
       render: (_, record) => moment(record.time).format('YYYY-MM-DD HH:mm:ss'),
-      renderFormItem: (item, { defaultRender, ...rest }, form) => {
-        const status = form.getFieldValue('status');
-
-        if (`${status}` === '0') {
-          return false;
-        }
-
-        if (`${status}` === '3') {
-          return <Input {...rest} placeholder="请输入异常原因！" />;
-        }
-
-        return defaultRender(item);
-      },
     },
     {
       title: '操作',
@@ -106,6 +95,16 @@ const TableList = () => {
             }}
           >
             修改
+          </a>
+          <Divider type="vertical" />
+          <a
+            onClick={async () => {
+              const res = await getRecordById(record.uid);
+              handleDetailModalVisible(true);
+              setDetailValues(res);
+            }}
+          >
+            详情
           </a>
         </>
       ),
@@ -124,8 +123,6 @@ const TableList = () => {
           defaultCollapsed: false,
         }}
         request={async (params) => {
-          console.log(params);
-          // queryRule({ offset: (params.current - 1) * params.pageSize, limit: params.pageSize })
           const { pageSize, current, time, ...p } = params;
           const paramTemp = {
             ...p,
@@ -135,9 +132,9 @@ const TableList = () => {
             end_date: time && time[1],
             // 'device.uid': '2325287426'
           };
-          const msg = await queryRule(paramTemp);
+          const msg = await queryRecord(paramTemp);
           return {
-            data: msg.data || {},
+            data: msg.data,
             success: true,
             total: msg.meta.total,
           };
@@ -190,7 +187,6 @@ const TableList = () => {
             onSubmit={async (value) => {
               value.uid = stepFormValues.uid;
               const success = await updateRecord(value);
-              console.log(success);
               if (success) {
                 handleUpdateModalVisible(false);
                 if (actionRef.current) {
@@ -204,6 +200,18 @@ const TableList = () => {
             columns={columns}
           />
         </UpdateForm>
+      ) : null}
+      {detailValues && Object.keys(detailValues).length ? (
+        <Modal
+          width="60%"
+          destroyOnClose
+          title="记录详情"
+          visible={detailModalVisible}
+          onCancel={() => handleDetailModalVisible(false)}
+          footer={null}
+        >
+          <FabricContainer product={detailValues} height={300}></FabricContainer>
+        </Modal>
       ) : null}
     </PageContainer>
   );

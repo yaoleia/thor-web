@@ -1,25 +1,24 @@
 import request from '@/utils/request';
 
-export async function queryRule(params) {
+export async function queryRecord(params) {
   return request('/api/record', {
     params,
   });
 }
-export async function removeRule(params) {
+export async function removeRecord(params) {
   console.log(params);
-  return request('/api/record/' + params, {
+  return request(`/api/record/${params}`, {
     method: 'DELETE',
   });
 }
-export async function updateRecord(params) {
-  return request('/api/record/' + params.uid, {
-    method: 'PUT',
-    data: { ...params },
+export async function getRecordById(params) {
+  return request(`/api/record/${params}`, {
+    method: 'get',
   });
 }
-export async function addRecord(params) {
-  return request('/api/record/', {
-    method: 'POST',
-    data: { ...params, method: 'post' },
+export async function updateRecord(params) {
+  return request(`/api/record/${params}`, {
+    method: 'PUT',
+    data: { ...params },
   });
 }
