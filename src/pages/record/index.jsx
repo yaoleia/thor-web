@@ -48,6 +48,11 @@ const TableList = () => {
   const [selectedRowsState, setSelectedRows] = useState([]);
   const columns = [
     {
+      title: '序号',
+      dataIndex: 'index',
+      valueType: 'index',
+    },
+    {
       title: '生产id',
       dataIndex: 'uid',
       hideInForm: true,
