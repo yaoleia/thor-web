@@ -50,7 +50,8 @@ const TableList = () => {
     {
       title: '序号',
       dataIndex: 'index',
-      valueType: 'index',
+      // valueType: 'index',
+      render: (_, record) => record.indexTemp,
     },
     {
       title: '生产id',
@@ -138,6 +139,10 @@ const TableList = () => {
             // 'device.uid': '2325287426'
           };
           const msg = await queryRecord(paramTemp);
+          msg.data.map((item, index) => {
+            item.indexTemp = index + 1 + (current - 1) * pageSize;
+            return item;
+          });
           return {
             data: msg.data,
             success: true,

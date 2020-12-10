@@ -60,4 +60,5 @@ const request = extend({
 request.use(async (ctx, next) => {
   await next();
 });
+
 export default request;
