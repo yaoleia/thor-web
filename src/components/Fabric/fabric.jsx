@@ -2,7 +2,7 @@ import React, { createRef } from 'react';
 import { fabric } from 'fabric';
 class Fabric extends React.Component {
   containerRef = createRef();
-
+  canvasRef = createRef();
   componentDidMount() {
     this.init();
     window.addEventListener('resize', this.resize, {
@@ -112,7 +112,7 @@ class Fabric extends React.Component {
   };
 
   init() {
-    const canvas = new fabric.Canvas('canvas', {
+    const canvas = new fabric.Canvas(this.canvasRef.current, {
       mageSmoothingEnabled: false,
       enableRetinaScaling: false,
       fireRightClick: true,
@@ -200,7 +200,7 @@ class Fabric extends React.Component {
   render() {
     return (
       <div ref={this.containerRef} {...this.props}>
-        <canvas id="canvas" />
+        <canvas ref={this.canvasRef} />
       </div>
     );
   }
