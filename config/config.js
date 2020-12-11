@@ -55,13 +55,13 @@ export default defineConfig({
             },
             {
               name: '生产记录',
-              icon: 'ProjectOutlined',
+              icon: 'FileDoneOutlined',
               path: '/record',
               component: './record',
             },
             {
               name: '设备管理',
-              icon: 'ProjectOutlined',
+              icon: 'SettingOutlined',
               path: '/system',
               component: './system',
             },

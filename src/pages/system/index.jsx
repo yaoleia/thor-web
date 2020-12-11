@@ -61,13 +61,13 @@ const TableList = () => {
   const [selectedRowsState, setSelectedRows] = useState([]);
   const columns = [
     {
-      title: 'uid',
+      title: '设备id',
       dataIndex: 'uid',
       hideInForm: true,
       search: false,
     },
     {
-      title: '名称',
+      title: '设备名称',
       dataIndex: 'name',
       formItemProps: {
         rules: [
@@ -79,7 +79,7 @@ const TableList = () => {
       },
     },
     {
-      title: 'ip',
+      title: '设备ip',
       dataIndex: 'ip',
       valueType: 'input',
     },
@@ -121,7 +121,11 @@ const TableList = () => {
   ];
 
   return (
-    <PageContainer>
+    <PageContainer
+      pageHeaderRender={() => {
+        return false;
+      }}
+    >
       <ProTable
         actionRef={actionRef}
         search={{
