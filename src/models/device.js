@@ -1,5 +1,10 @@
-import { queryDevice, bindDeviceModel } from '@/services/device';
-
+import {
+  queryDevice,
+  bindDeviceModel,
+  // addDevice,
+  // updateDevice,
+  // removeDevice,
+} from '@/services/device';
 const DeviceModel = {
   namespace: 'device',
   state: {
@@ -13,6 +18,22 @@ const DeviceModel = {
         payload: Array.isArray(resp.data) ? resp.data : [],
       });
     },
+    // TODO: 用法错误
+    // *addModel({ payload }, { call }) {
+    //   const resp = yield call(addDevice, payload);
+    //   if (!resp) return;
+    // },
+
+    // *removeModel({ payload }, { call }) {
+    //   const resp = yield call(removeDevice, payload);
+    //   if (!resp) return;
+    // },
+
+    // *updateModel({ payload }, { call }) {
+    //   const resp = yield call(updateDevice, payload);
+    //   if (!resp) return;
+    // },
+
     *bindModel({ payload }, { call, put }) {
       const resp = yield call(bindDeviceModel, payload);
       if (!resp) return;

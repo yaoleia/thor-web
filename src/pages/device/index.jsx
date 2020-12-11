@@ -1,73 +1,29 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
+import { connect } from 'umi';
 import React, { useState, useRef } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import moment from 'moment';
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
-import { updateDevice, addDevice, removeDevice, queryDevice } from './service';
-/**
- * 添加节点
- * @param fields
- */
 
-const handleAdd = async (fields) => {
-  const hide = message.loading('正在添加');
-  console.log('------');
-  console.log(fields);
-  try {
-    await addDevice({ ...fields });
-    hide();
-    message.success('添加成功');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('添加失败请重试！');
-    return false;
-  }
-};
-/**
- *  删除节点
- * @param selectedRows
- */
-
-const handleRemove = async (selectedRows) => {
-  const hide = message.loading('正在删除');
-  if (!selectedRows) return true;
-
-  try {
-    const res = await removeDevice(selectedRows.map((row) => row.uid));
-    if (!(res.deletedCount > 0)) {
-      hide();
-      message.success('删除成功，即将刷新');
-      return false;
-    }
-    hide();
-    message.success('删除成功，即将刷新');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('删除失败，请重试');
-    return false;
-  }
-};
-
-const TableList = () => {
+const TableList = (props) => {
   const [createModalVisible, handleModalVisible] = useState(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState(false);
-  const [stepFormValues, setStepFormValues] = useState({});
+  const [updateValues, setUpdateValues] = useState({});
   const actionRef = useRef();
   const [selectedRowsState, setSelectedRows] = useState([]);
   const columns = [
     {
-      title: 'uid',
+      title: '设备ID',
       dataIndex: 'uid',
       hideInForm: true,
-      search: false,
+      width: 150,
+      copyable: true,
     },
     {
-      title: '名称',
+      title: '设备名称',
       dataIndex: 'name',
       formItemProps: {
         rules: [
@@ -77,32 +33,37 @@ const TableList = () => {
           },
         ],
       },
+      width: 150,
     },
     {
-      title: 'ip',
+      title: '设备IP',
       dataIndex: 'ip',
       valueType: 'input',
+      width: 150,
     },
     {
-      title: '摄像头地址',
+      title: '硬件服务地址',
       dataIndex: 'camera_server',
       valueType: 'textarea',
+      ellipsis: true,
+      search: false,
     },
     {
-      title: '模型地址',
+      title: '模型服务地址',
       dataIndex: 'model_server',
       valueType: 'textarea',
+      ellipsis: true,
+      search: false,
     },
     {
       title: '创建时间',
       dataIndex: 'time',
-      valueType: 'dateRange',
+      valueType: 'dateTimeRange',
       hideInForm: true,
       render: (_, record) => moment(record.time).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '操作',
-      width: 200,
       dataIndex: 'option',
       valueType: 'option',
       render: (_, record) => (
@@ -110,7 +71,7 @@ const TableList = () => {
           <a
             onClick={() => {
               handleUpdateModalVisible(true);
-              setStepFormValues(record);
+              setUpdateValues(record);
             }}
           >
             修改
@@ -120,6 +81,7 @@ const TableList = () => {
     },
   ];
 
+  const { devices, dispatch } = props;
   return (
     <PageContainer>
       <ProTable
@@ -131,29 +93,20 @@ const TableList = () => {
         pagination={false}
         toolBarRender={() => [
           <Button type="primary" key="show" onClick={() => handleModalVisible(true)}>
-            <PlusOutlined /> 新建
+            <PlusOutlined /> 添加设备
           </Button>,
         ]}
-        request={async (params) => {
-          const { pageSize, current, ...p } = params;
-          const paramTemp = {
-            ...p,
-            // offset: (current - 1) * pageSize,
-            // limit: pageSize,
-          };
-          const msg = await queryDevice(paramTemp);
-          console.log(msg);
+        request={async () => {
           return {
-            data: msg.data,
+            data: devices,
             success: true,
-            total: msg.meta.total,
+            total: devices.length,
           };
         }}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
         }}
-        headerTitle="查询表格"
         rowKey="uid"
       />
       {selectedRowsState?.length > 0 && (
@@ -174,7 +127,14 @@ const TableList = () => {
         >
           <Button
             onClick={async () => {
-              await handleRemove(selectedRowsState);
+              if (!selectedRowsState) return true;
+              await dispatch({
+                type: 'device/removeModel',
+                payload: selectedRowsState.map((row) => row.uid),
+              });
+              await dispatch({
+                type: 'device/fetch',
+              });
               setSelectedRows([]);
               actionRef.current?.reloadAndRest?.();
             }}
@@ -186,14 +146,17 @@ const TableList = () => {
       <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
         <ProTable
           onSubmit={async (value) => {
-            console.log('---------');
-            console.log(value);
-            const success = await handleAdd(value);
-            if (success) {
-              handleModalVisible(false);
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
+            // TODO: 这不是promise的
+            await dispatch({
+              type: 'device/addModel',
+              payload: { ...value },
+            });
+            await dispatch({
+              type: 'device/fetch',
+            });
+            handleModalVisible(false);
+            if (actionRef.current) {
+              actionRef.current.reload();
             }
           }}
           rowKey="uid"
@@ -201,25 +164,29 @@ const TableList = () => {
           columns={columns}
         />
       </CreateForm>
-      {stepFormValues && Object.keys(stepFormValues).length ? (
+      {updateValues && Object.keys(updateValues).length ? (
         <UpdateForm
           onCancel={() => handleUpdateModalVisible(false)}
           modalVisible={updateModalVisible}
         >
           <ProTable
             onSubmit={async (value) => {
-              value.uid = stepFormValues.uid;
-              const success = await updateDevice(value);
-              if (success) {
-                handleUpdateModalVisible(false);
-                if (actionRef.current) {
-                  actionRef.current.reload();
-                }
+              value.uid = updateValues.uid;
+              await dispatch({
+                type: 'device/updateModel',
+                payload: { ...value },
+              });
+              await dispatch({
+                type: 'device/fetch',
+              });
+              handleUpdateModalVisible(false);
+              if (actionRef.current) {
+                actionRef.current.reload();
               }
             }}
             rowKey="uid"
             type="form"
-            form={{ initialValues: stepFormValues }}
+            form={{ initialValues: updateValues }}
             columns={columns}
           />
         </UpdateForm>
@@ -228,4 +195,6 @@ const TableList = () => {
   );
 };
 
-export default TableList;
+export default connect(({ device }) => ({
+  devices: device.devices,
+}))(TableList);
