@@ -62,8 +62,8 @@ export default defineConfig({
             {
               name: '设备管理',
               icon: 'SettingOutlined',
-              path: '/system',
-              component: './system',
+              path: '/device',
+              component: './device',
             },
             {
               name: '数据集',

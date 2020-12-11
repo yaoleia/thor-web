@@ -1,5 +1,11 @@
-import { queryDevice, bindDeviceModel } from '@/services/device';
-
+import {
+  queryDevice,
+  bindDeviceModel,
+  addDevice,
+  updateDevice,
+  removeDevice,
+} from '@/services/device';
+import { message } from 'antd';
 const DeviceModel = {
   namespace: 'device',
   state: {
@@ -13,6 +19,25 @@ const DeviceModel = {
         payload: Array.isArray(resp.data) ? resp.data : [],
       });
     },
+
+    *addModel({ payload }, { call }) {
+      const resp = yield call(addDevice, payload);
+      if (!resp) return;
+      message.success('创建成功，即将刷新');
+    },
+
+    *removeModel({ payload }, { call }) {
+      const resp = yield call(removeDevice, payload);
+      if (!resp) return;
+      message.success('删除成功，即将刷新');
+    },
+
+    *updateModel({ payload }, { call }) {
+      const resp = yield call(updateDevice, payload);
+      if (!resp) return;
+      message.success('更新成功，即将刷新');
+    },
+
     *bindModel({ payload }, { call, put }) {
       const resp = yield call(bindDeviceModel, payload);
       if (!resp) return;
