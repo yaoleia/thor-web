@@ -60,6 +60,12 @@ export default defineConfig({
               component: './record',
             },
             {
+              name: '设备管理',
+              icon: 'ProjectOutlined',
+              path: '/system',
+              component: './system',
+            },
+            {
               name: '数据集',
               icon: 'DatabaseOutlined',
               path: '/datasetlist',
