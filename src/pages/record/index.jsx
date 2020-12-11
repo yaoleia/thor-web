@@ -213,6 +213,7 @@ const TableList = () => {
       ) : null}
       {detailValues && Object.keys(detailValues).length ? (
         <Modal
+          bodyStyle={{ height: `calc(100vh - 243px)` }}
           width="60%"
           destroyOnClose
           title="记录详情"
@@ -220,7 +221,7 @@ const TableList = () => {
           onCancel={() => handleDetailModalVisible(false)}
           footer={null}
         >
-          <FabricContainer product={detailValues} height={300}></FabricContainer>
+          <FabricContainer product={detailValues}></FabricContainer>
         </Modal>
       ) : null}
     </PageContainer>

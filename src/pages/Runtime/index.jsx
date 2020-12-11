@@ -146,7 +146,9 @@ class Runtime extends React.Component {
             </Select>
           </Form.Item>
         </Form>
-        <FabricContainer product={product} height={143}></FabricContainer>
+        <div className={styles.fabricDiv}>
+          <FabricContainer product={product}></FabricContainer>
+        </div>
       </div>
     );
   }

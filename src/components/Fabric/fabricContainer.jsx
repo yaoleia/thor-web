@@ -12,12 +12,12 @@ class FabricContainer extends React.Component {
     return _.groupBy(arr, 'label');
   };
   render() {
-    const { product, height } = this.props;
+    const { product } = this.props;
     const { defect_items, size_items, size_alarm, defect_alarm } = product;
     const defect_detail = this.getGroup(defect_items);
     const size_detail = this.getGroup(size_items);
     return (
-      <div className={styles.fabricContainer} style={{ height: `calc(100vh - ${height}px)` }}>
+      <div className={styles.fabricContainer}>
         <ProCard title="" colSpan="20%" className={styles.leftMsg}>
           <Descriptions column={1} title="检测结果">
             {product.uid && (
