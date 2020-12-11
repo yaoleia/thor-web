@@ -50,7 +50,8 @@ const TableList = () => {
     {
       title: '序号',
       dataIndex: 'index',
-      // valueType: 'index',
+      search: false,
+      hideInForm: true,
       render: (_, record) => record.indexTemp,
     },
     {
