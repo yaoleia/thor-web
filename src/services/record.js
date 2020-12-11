@@ -5,19 +5,18 @@ export async function queryRecord(params) {
     params,
   });
 }
-export async function removeRecord(params) {
-  console.log(params);
-  return request(`/api/record/${params}`, {
+export async function removeRecord(uid) {
+  return request(`/api/record/${uid}`, {
     method: 'DELETE',
   });
 }
-export async function getRecordById(params) {
-  return request(`/api/record/${params}`, {
+export async function getRecordById(uid) {
+  return request(`/api/record/${uid}`, {
     method: 'get',
   });
 }
 export async function updateRecord(params) {
-  return request(`/api/record/${params}`, {
+  return request(`/api/record/${params.uid}`, {
     method: 'PUT',
     data: { ...params },
   });
