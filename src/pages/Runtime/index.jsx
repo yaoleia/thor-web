@@ -19,6 +19,9 @@ class Runtime extends React.PureComponent {
   }
 
   componentDidUpdate({ currentDevice: preDevice }) {
+    if (this.wsErrorHide) {
+      this.wsErrorHide();
+    }
     const { currentDevice } = this.props;
     if (preDevice.uid === currentDevice.uid) return;
     this.setState({ product: {} });
@@ -52,9 +55,13 @@ class Runtime extends React.PureComponent {
           this.setState({ product: payload });
           break;
         default:
-          message.error({
+          this.wsErrorHide = message.error({
             content: _.get(payload, 'msg.code') || _.get(payload, 'msg.error') || payload.msg,
             key: 'wsError',
+            duration: 3,
+            onClose: () => {
+              this.wsErrorHide = null;
+            },
           });
           break;
       }
