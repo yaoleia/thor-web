@@ -250,7 +250,7 @@ const TableList = () => {
       {detailValues && Object.keys(detailValues).length ? (
         <Modal
           bodyStyle={{ height: `calc(100vh - 223px)`, padding: 0 }}
-          width="70%"
+          width="75%"
           destroyOnClose
           title="记录详情"
           visible={detailModalVisible}

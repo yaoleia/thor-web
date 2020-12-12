@@ -18,7 +18,7 @@ class FabricContainer extends React.Component {
     const size_detail = this.getGroup(size_items);
     return (
       <div className={styles.fabricContainer}>
-        <ProCard title="" colSpan="20%" className={styles.leftMsg}>
+        <ProCard colSpan="25%" className={styles.leftMsg}>
           <Descriptions column={1} title="检测结果">
             {product.uid && (
               <>
