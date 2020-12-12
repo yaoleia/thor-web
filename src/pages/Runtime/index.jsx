@@ -7,31 +7,22 @@ import { Select, Form, message, Tag } from 'antd';
 import FabricContainer from '@/components/Fabric/fabricContainer';
 import styles from './style.less';
 
-class Runtime extends React.Component {
-  state = {
-    product: {},
-    device: {},
-  };
+class Runtime extends React.PureComponent {
+  state = { product: {} };
+
   componentDidMount() {
-    this.init();
+    this.socketCreate(this.props.currentDevice);
   }
 
   componentWillUnmount() {
     this.wsClose();
   }
 
-  async init() {
-    try {
-      const { devices } = this.props;
-      let selectIndex = devices.findIndex((item) => item.uid === localStorage.currentDevice);
-      selectIndex = selectIndex === -1 ? 0 : selectIndex;
-      const device = devices[selectIndex];
-      if (!device) return;
-      this.setState({ device });
-      this.socketCreate(device);
-    } catch (error) {
-      message.error(error);
-    }
+  componentDidUpdate({ currentDevice: preDevice }) {
+    const { currentDevice } = this.props;
+    if (preDevice.uid === currentDevice.uid) return;
+    this.setState({ product: {} });
+    this.socketCreate(currentDevice);
   }
 
   wsClose = () => {
@@ -42,7 +33,7 @@ class Runtime extends React.Component {
 
   socketCreate = ({ uid: rooms }) => {
     this.wsClose();
-    localStorage.currentDevice = rooms;
+    if (!rooms) return;
     const socket = io(SOCKETIO, {
       query: { rooms },
     });
@@ -58,9 +49,7 @@ class Runtime extends React.Component {
       } = res;
       switch (action) {
         case 'product':
-          this.setState({
-            product: payload,
-          });
+          this.setState({ product: payload });
           break;
         default:
           message.error({
@@ -75,28 +64,28 @@ class Runtime extends React.Component {
   };
   handleChange = (device_id) => {
     const device = this.props.devices.find((item) => item.uid === device_id);
-    this.socketCreate(device);
     this.selectDevice.blur();
-    this.setState({
-      device,
-      product: {},
+    this.props.dispatch({
+      type: 'device/setCurrent',
+      payload: device,
     });
   };
 
   modelhandleChange = async (style_id) => {
+    const { dispatch, currentDevice } = this.props;
     this.selectModel.blur();
-    this.props.dispatch({
+    dispatch({
       type: 'device/bindModel',
       payload: {
-        device_id: _.get(this.state, 'device.uid'),
+        device_id: currentDevice.uid,
         style_id,
       },
     });
   };
   render() {
-    const { devices, models, loading } = this.props;
-    const { product, device } = this.state;
-    const style_id = _.get(device, 'style.uid');
+    const { devices, currentDevice, models, loading } = this.props;
+    const { product } = this.state;
+    const style_id = _.get(currentDevice, 'style.uid');
     return (
       <PageContainer pageHeaderRender={() => false} className={styles.runtimeContainer}>
         <Form layout="inline" className={styles.formSelect}>
@@ -108,7 +97,7 @@ class Runtime extends React.Component {
               disabled={loading}
               placeholder="请选择运行设备"
               style={{ width: '200px' }}
-              value={device && device.uid}
+              value={currentDevice.uid}
               onChange={this.handleChange}
               dropdownClassName="hasUid"
             >
@@ -123,29 +112,31 @@ class Runtime extends React.Component {
                 })}
             </Select>
           </Form.Item>
-          <Form.Item label="检测型号">
-            <Select
-              ref={(ref) => {
-                this.selectModel = ref;
-              }}
-              disabled={loading}
-              loading={loading}
-              placeholder="当前设备还未绑定型号"
-              style={{ width: '200px' }}
-              value={style_id}
-              onChange={this.modelhandleChange}
-              dropdownClassName="hasUid"
-            >
-              {models.map((item) => {
-                return (
-                  <Select.Option value={item.uid} key={item.uid}>
-                    <span>{item.name}</span>
-                    <Tag>{item.uid}</Tag>
-                  </Select.Option>
-                );
-              })}
-            </Select>
-          </Form.Item>
+          {currentDevice.uid && (
+            <Form.Item label="检测型号">
+              <Select
+                ref={(ref) => {
+                  this.selectModel = ref;
+                }}
+                disabled={loading}
+                loading={loading}
+                placeholder="当前设备还未绑定型号"
+                style={{ width: '200px' }}
+                value={style_id}
+                onChange={this.modelhandleChange}
+                dropdownClassName="hasUid"
+              >
+                {models.map((item) => {
+                  return (
+                    <Select.Option value={item.uid} key={item.uid}>
+                      <span>{item.name}</span>
+                      <Tag>{item.uid}</Tag>
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </Form.Item>
+          )}
         </Form>
         <div className={styles.fabricDiv}>
           <FabricContainer product={product}></FabricContainer>
@@ -157,6 +148,7 @@ class Runtime extends React.Component {
 
 export default connect(({ device, model, loading }) => ({
   devices: device.devices,
+  currentDevice: device.current,
   models: model.models,
   loading: loading.models.device,
 }))(Runtime);

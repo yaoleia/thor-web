@@ -1,6 +1,6 @@
 import React, { createRef } from 'react';
 import { fabric } from 'fabric';
-class Fabric extends React.Component {
+class Fabric extends React.PureComponent {
   containerRef = createRef();
   canvasRef = createRef();
   componentDidMount() {
@@ -14,7 +14,9 @@ class Fabric extends React.Component {
     window.removeEventListener('resize', this.resize);
   }
 
-  UNSAFE_componentWillReceiveProps({ product }) {
+  componentDidUpdate({ product: preProduct }) {
+    const { product } = this.props;
+    if (preProduct === product) return;
     if (!product.uid && this.canvas) {
       this.clearImgElement();
       this.canvas.clear();

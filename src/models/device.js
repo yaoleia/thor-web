@@ -10,6 +10,7 @@ const DeviceModel = {
   namespace: 'device',
   state: {
     devices: [],
+    current: {},
   },
   effects: {
     *fetch(_, { call, put }) {
@@ -55,7 +56,7 @@ const DeviceModel = {
       });
     },
 
-    *bindModel({ payload }, { call, put }) {
+    *bindModel({ payload }, { call, put, select }) {
       const resp = yield call(bindDeviceModel, payload);
       if (!resp) return;
       const { device, style } = resp;
@@ -63,20 +64,29 @@ const DeviceModel = {
       if (device && style) {
         device.style = style;
       }
+      const list = yield select(({ device: { devices } }) => {
+        const old = devices.find((d) => d.uid === device.uid);
+        Object.assign(old, device);
+        return [...devices];
+      });
       yield put({
-        type: 'bind',
-        payload: device,
+        type: 'queryList',
+        payload: list,
       });
     },
   },
   reducers: {
     queryList(state, { payload: devices }) {
-      return { ...state, devices };
+      let device = devices.find((d) => d.uid === localStorage.currentDevice);
+      if (!device) {
+        device = devices[0] || {};
+        localStorage.currentDevice = device.uid || '';
+      }
+      return { ...state, devices, current: device };
     },
-    bind({ devices }, { payload }) {
-      const device = devices.find((d) => d.uid === payload.uid);
-      Object.assign(device, payload);
-      return { devices: [...devices] };
+    setCurrent(state, { payload }) {
+      localStorage.currentDevice = payload.uid || '';
+      return { ...state, current: payload };
     },
   },
 };
