@@ -45,9 +45,10 @@ const DeviceModel = {
 
     *updateModel({ payload }, { call, put, select }) {
       const resp = yield call(updateDevice, payload);
+      if (!resp) return;
       const list = yield select(({ device: { devices } }) => {
-        const index = devices.findIndex(({ uid }) => uid === payload.uid);
-        devices.splice(index, 1, resp);
+        const preDevice = devices.find(({ uid }) => uid === resp.uid);
+        Object.assign(preDevice, resp);
         return [...devices];
       });
       yield put({
@@ -65,8 +66,8 @@ const DeviceModel = {
         device.style = style;
       }
       const list = yield select(({ device: { devices } }) => {
-        const old = devices.find((d) => d.uid === device.uid);
-        Object.assign(old, device);
+        const preDevice = devices.find((d) => d.uid === device.uid);
+        Object.assign(preDevice, device);
         return [...devices];
       });
       yield put({
