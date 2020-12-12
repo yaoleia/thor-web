@@ -30,7 +30,7 @@ export default defineConfig({
         {
           name: 'login',
           path: '/user/login',
-          component: './user/login',
+          component: './User/login',
         },
       ],
     },
@@ -57,13 +57,13 @@ export default defineConfig({
               name: '生产记录',
               icon: 'FileSearchOutlined',
               path: '/record',
-              component: './record',
+              component: './Record',
             },
             {
               name: '设备管理',
               icon: 'BorderOuterOutlined',
               path: '/device',
-              component: './device',
+              component: './Device',
             },
             // {
             //   name: '数据集',

@@ -79,7 +79,7 @@ const BasicLayout = (props) => {
       breakpoint={false}
       logo={logo}
       onCollapse={handleMenuCollapse}
-      onMenuHeaderClick={() => history.push('/')}
+      onMenuHeaderClick={() => history.push('/runtime')}
       menuRender={({ breadcrumb, location: { pathname } }, dom) => {
         const { hideMenu } = breadcrumb[pathname] || {};
         return <div className={hideMenu ? 'hide-menu' : ''}>{dom}</div>;
@@ -91,13 +91,6 @@ const BasicLayout = (props) => {
 
         return <Link to={menuItemProps.path}>{defaultDom}</Link>;
       }}
-      breadcrumbRender={(routers = []) => [
-        {
-          path: '/',
-          breadcrumbName: '首页',
-        },
-        ...routers,
-      ]}
       itemRender={(route, params, routes, paths) => {
         const first = routes.indexOf(route) === 0;
         return first ? (
