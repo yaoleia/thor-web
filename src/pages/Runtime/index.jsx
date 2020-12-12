@@ -1,9 +1,10 @@
 import React from 'react';
-import FabricContainer from '@/components/Fabric/fabricContainer';
+import { PageContainer } from '@ant-design/pro-layout';
 import { connect } from 'umi';
 import _ from 'lodash';
 import io from 'socket.io-client';
 import { Select, Form, message, Tag } from 'antd';
+import FabricContainer from '@/components/Fabric/fabricContainer';
 import styles from './style.less';
 
 class Runtime extends React.Component {
@@ -97,7 +98,7 @@ class Runtime extends React.Component {
     const { product, device } = this.state;
     const style_id = _.get(device, 'style.uid');
     return (
-      <div className={styles.runtimeContainer}>
+      <PageContainer pageHeaderRender={() => false} className={styles.runtimeContainer}>
         <Form layout="inline" className={styles.formSelect}>
           <Form.Item label="运行设备">
             <Select
@@ -149,7 +150,7 @@ class Runtime extends React.Component {
         <div className={styles.fabricDiv}>
           <FabricContainer product={product}></FabricContainer>
         </div>
-      </div>
+      </PageContainer>
     );
   }
 }

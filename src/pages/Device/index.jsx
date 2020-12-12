@@ -19,7 +19,6 @@ const TableList = (props) => {
       title: '设备ID',
       dataIndex: 'uid',
       hideInForm: true,
-      width: 150,
       copyable: true,
     },
     {
@@ -33,23 +32,21 @@ const TableList = (props) => {
           },
         ],
       },
-      width: 150,
     },
     {
       title: '设备IP',
       dataIndex: 'ip',
       valueType: 'input',
-      width: 150,
     },
     {
-      title: '硬件服务地址',
+      title: '硬件URL',
       dataIndex: 'camera_server',
       valueType: 'textarea',
       ellipsis: true,
       search: false,
     },
     {
-      title: '模型服务地址',
+      title: '模型URL',
       dataIndex: 'model_server',
       valueType: 'textarea',
       ellipsis: true,
@@ -87,8 +84,7 @@ const TableList = (props) => {
       <ProTable
         actionRef={actionRef}
         search={{
-          labelWidth: 120,
-          defaultCollapsed: false,
+          labelWidth: 100,
         }}
         pagination={false}
         toolBarRender={() => [

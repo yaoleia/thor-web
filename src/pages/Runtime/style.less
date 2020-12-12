@@ -1,11 +1,8 @@
 @import '~antd/es/style/themes/default.less';
 
 .runtimeContainer {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
   .formSelect {
-    margin-bottom: 15px;
+    margin: 12px 20px;
     :global {
       .ant-select-selection-item {
         .ant-tag {
@@ -14,7 +11,12 @@
       }
     }
   }
+  :global {
+    .ant-pro-page-container-children-content {
+      margin: 0;
+    }
+  }
   .fabricDiv {
-    height: calc(100vh - 143px);
+    height: calc(100vh - 104px);
   }
 }

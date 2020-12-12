@@ -147,11 +147,7 @@ const TableList = () => {
     },
   ];
   return (
-    <PageContainer
-      pageHeaderRender={() => {
-        return false;
-      }}
-    >
+    <PageContainer>
       <ProTable
         actionRef={actionRef}
         search={{
@@ -182,7 +178,6 @@ const TableList = () => {
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
         }}
-        headerTitle="生产记录表格"
         rowKey="uid"
       />
 
