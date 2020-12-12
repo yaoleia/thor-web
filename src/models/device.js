@@ -1,10 +1,11 @@
 import {
   queryDevice,
   bindDeviceModel,
-  // addDevice,
-  // updateDevice,
-  // removeDevice,
+  addDevice,
+  updateDevice,
+  removeDevice,
 } from '@/services/device';
+
 const DeviceModel = {
   namespace: 'device',
   state: {
@@ -18,21 +19,41 @@ const DeviceModel = {
         payload: Array.isArray(resp.data) ? resp.data : [],
       });
     },
-    // TODO: 用法错误
-    // *addModel({ payload }, { call }) {
-    //   const resp = yield call(addDevice, payload);
-    //   if (!resp) return;
-    // },
+    *addModel({ payload }, { call, put, select }) {
+      const resp = yield call(addDevice, payload);
+      const list = yield select(({ device: { devices } }) => {
+        devices.unshift(resp);
+        return [...devices];
+      });
+      yield put({
+        type: 'queryList',
+        payload: list,
+      });
+    },
 
-    // *removeModel({ payload }, { call }) {
-    //   const resp = yield call(removeDevice, payload);
-    //   if (!resp) return;
-    // },
+    *removeModel({ payload }, { call, put, select }) {
+      yield call(removeDevice, payload);
+      const list = yield select(({ device }) =>
+        device.devices.filter(({ uid }) => !payload.includes(uid)),
+      );
+      yield put({
+        type: 'queryList',
+        payload: list,
+      });
+    },
 
-    // *updateModel({ payload }, { call }) {
-    //   const resp = yield call(updateDevice, payload);
-    //   if (!resp) return;
-    // },
+    *updateModel({ payload }, { call, put, select }) {
+      const resp = yield call(updateDevice, payload);
+      const list = yield select(({ device: { devices } }) => {
+        const index = devices.findIndex(({ uid }) => uid === payload.uid);
+        devices.splice(index, 1, resp);
+        return [...devices];
+      });
+      yield put({
+        type: 'queryList',
+        payload: list,
+      });
+    },
 
     *bindModel({ payload }, { call, put }) {
       const resp = yield call(bindDeviceModel, payload);

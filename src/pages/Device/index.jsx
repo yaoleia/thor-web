@@ -1,14 +1,14 @@
+import React, { useState, useRef, useEffect } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
+import { Button, Divider, Modal } from 'antd';
 import { connect } from 'umi';
-import React, { useState, useRef } from 'react';
+import moment from 'moment';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
-import moment from 'moment';
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
 
-const TableList = (props) => {
+const TableList = ({ devices, dispatch, loading }) => {
   const [createModalVisible, handleModalVisible] = useState(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState(false);
   const [updateValues, setUpdateValues] = useState({});
@@ -37,6 +37,7 @@ const TableList = (props) => {
       title: '设备IP',
       dataIndex: 'ip',
       valueType: 'input',
+      search: false,
     },
     {
       title: '硬件URL',
@@ -57,6 +58,7 @@ const TableList = (props) => {
       dataIndex: 'time',
       valueType: 'dateTimeRange',
       hideInForm: true,
+      search: false,
       render: (_, record) => moment(record.time).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
@@ -73,15 +75,54 @@ const TableList = (props) => {
           >
             修改
           </a>
+          <Divider type="vertical" />
+          <a
+            onClick={() => {
+              Modal.confirm({
+                title: '删除设备',
+                content: `确定删除设备(${record.uid})吗？`,
+                okText: '确认',
+                cancelText: '取消',
+                centered: true,
+                maskClosable: true,
+                onOk: () =>
+                  dispatch({
+                    type: 'device/removeModel',
+                    payload: [record.uid],
+                  }),
+              });
+            }}
+          >
+            删除
+          </a>
         </>
       ),
     },
   ];
 
-  const { devices, dispatch } = props;
+  useEffect(() => {
+    setSelectedRows([]);
+    actionRef.current?.reloadAndRest?.();
+  }, [devices]);
+
+  const requestFilter = ({ uid: s_uid, name: s_name }) => {
+    const filtered = devices.filter((device) => {
+      const { uid, name } = device;
+      return (
+        (!s_uid || uid.toLowerCase().includes(s_uid)) &&
+        (!s_name || name.toLowerCase().includes(s_name))
+      );
+    });
+    return {
+      data: filtered,
+      success: true,
+      total: filtered.length,
+    };
+  };
   return (
     <PageContainer>
       <ProTable
+        loading={loading}
         actionRef={actionRef}
         search={{
           labelWidth: 100,
@@ -92,13 +133,7 @@ const TableList = (props) => {
             <PlusOutlined /> 添加设备
           </Button>,
         ]}
-        request={async () => {
-          return {
-            data: devices,
-            success: true,
-            total: devices.length,
-          };
-        }}
+        request={requestFilter}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
@@ -124,15 +159,10 @@ const TableList = (props) => {
           <Button
             onClick={async () => {
               if (!selectedRowsState) return true;
-              await dispatch({
+              dispatch({
                 type: 'device/removeModel',
                 payload: selectedRowsState.map((row) => row.uid),
               });
-              await dispatch({
-                type: 'device/fetch',
-              });
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
             }}
           >
             批量删除
@@ -141,19 +171,12 @@ const TableList = (props) => {
       )}
       <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
         <ProTable
-          onSubmit={async (value) => {
-            // TODO: 这不是promise的
-            await dispatch({
+          onSubmit={(value) => {
+            dispatch({
               type: 'device/addModel',
               payload: { ...value },
             });
-            await dispatch({
-              type: 'device/fetch',
-            });
             handleModalVisible(false);
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
           }}
           rowKey="uid"
           type="form"
@@ -168,17 +191,11 @@ const TableList = (props) => {
           <ProTable
             onSubmit={async (value) => {
               value.uid = updateValues.uid;
-              await dispatch({
+              dispatch({
                 type: 'device/updateModel',
                 payload: { ...value },
               });
-              await dispatch({
-                type: 'device/fetch',
-              });
               handleUpdateModalVisible(false);
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
             }}
             rowKey="uid"
             type="form"
@@ -191,6 +208,7 @@ const TableList = (props) => {
   );
 };
 
-export default connect(({ device }) => ({
+export default connect(({ device, loading }) => ({
   devices: device.devices,
+  loading: loading.models.device,
 }))(TableList);
