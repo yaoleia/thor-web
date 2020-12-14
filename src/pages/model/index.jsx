@@ -48,8 +48,8 @@ const TableList = ({ models, dispatch, loading }) => {
       search: false,
       disabled: true,
       ellipsis: true,
-      renderFormItem: (form) => {
-        return (
+      renderFormItem: (_, { defaultRender }, form) => {
+        return defaultRender(
           <>
             <Input value={form.getFieldValue('size_model')} placeholder="请选择模型地址" />
             <Dragger
@@ -73,7 +73,7 @@ const TableList = ({ models, dispatch, loading }) => {
                 <InboxOutlined />
               </p>
             </Dragger>
-          </>
+          </>,
         );
       },
     },
