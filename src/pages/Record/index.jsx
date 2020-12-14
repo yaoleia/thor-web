@@ -1,11 +1,12 @@
-import { Button, message, Select, Modal, Divider, Badge } from 'antd';
+import { Button, message, Select, Modal, Divider, Badge, Spin } from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import moment from 'moment';
 import ProTable from '@ant-design/pro-table';
-import UpdateForm from './components/UpdateForm';
 import { queryRecord, updateRecord, removeRecord, getRecordById } from '@/services/record';
 import FabricContainer from '@/components/Fabric/fabricContainer';
+import UpdateForm from './components/UpdateForm';
+import styles from './style.less';
 
 const { Option } = Select;
 
@@ -40,6 +41,7 @@ const TableList = () => {
   const [stepFormValues, setStepFormValues] = useState({});
   const [detailValues, setDetailValues] = useState({});
   const [selectedRowsState, setSelectedRows] = useState([]);
+  const [detailLoading, setDetailLoading] = useState(false);
   const actionRef = useRef();
   const columns = [
     {
@@ -66,7 +68,7 @@ const TableList = () => {
         ),
       renderFormItem: (_, record) => (
         <Select allowClear defaultValue={record.defect_alarm} placeholder="请选择">
-          <Option value={true}>NG</Option>
+          <Option value>NG</Option>
           <Option value={false}>OK</Option>
         </Select>
       ),
@@ -82,7 +84,7 @@ const TableList = () => {
         ),
       renderFormItem: (_, record) => (
         <Select allowClear defaultValue={record.size_alarm} placeholder="请选择">
-          <Option value={true}>NG</Option>
+          <Option value>NG</Option>
           <Option value={false}>OK</Option>
         </Select>
       ),
@@ -135,9 +137,15 @@ const TableList = () => {
           <Divider type="vertical" />
           <a
             onClick={async () => {
-              const res = await getRecordById(record.uid);
-              handleDetailModalVisible(true);
-              setDetailValues(res);
+              try {
+                setDetailLoading(true);
+                handleDetailModalVisible(true);
+                setDetailValues(await getRecordById(record.uid));
+              } catch (error) {
+                message.error('详情信息获取失败！');
+              } finally {
+                setDetailLoading(false);
+              }
             }}
           >
             详情
@@ -247,19 +255,21 @@ const TableList = () => {
           />
         </UpdateForm>
       ) : null}
-      {detailValues && Object.keys(detailValues).length ? (
-        <Modal
-          bodyStyle={{ height: `calc(100vh - 223px)`, padding: 0 }}
-          width="75%"
-          destroyOnClose
-          title="记录详情"
-          visible={detailModalVisible}
-          onCancel={() => handleDetailModalVisible(false)}
-          footer={null}
-        >
+      <Modal
+        bodyStyle={{ padding: 0 }}
+        width="75%"
+        title="记录详情"
+        visible={detailModalVisible}
+        onCancel={() => {
+          handleDetailModalVisible(false);
+          setDetailValues({});
+        }}
+        footer={null}
+      >
+        <Spin wrapperClassName={styles.detailWrap} spinning={detailLoading}>
           <FabricContainer product={detailValues}></FabricContainer>
-        </Modal>
-      ) : null}
+        </Spin>
+      </Modal>
     </PageContainer>
   );
 };
