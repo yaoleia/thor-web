@@ -13,18 +13,21 @@ class SecurityLayout extends React.Component {
       isReady: true,
     });
     const { dispatch } = this.props;
+    if (!dispatch) return;
+    dispatch({
+      type: 'user/getCurrent',
+    });
+  }
 
-    if (dispatch) {
-      dispatch({
-        type: 'user/getCurrent',
-      });
-      dispatch({
-        type: 'device/fetch',
-      });
-      dispatch({
-        type: 'model/fetch',
-      });
-    }
+  componentDidUpdate({ currentUser: preUser }) {
+    const { dispatch, currentUser } = this.props;
+    if (preUser.username === currentUser.username || !currentUser.username || !dispatch) return;
+    dispatch({
+      type: 'device/fetch',
+    });
+    dispatch({
+      type: 'model/fetch',
+    });
   }
 
   render() {

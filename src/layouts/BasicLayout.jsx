@@ -4,7 +4,7 @@
  * https://github.com/ant-design/ant-design-pro-layout
  */
 import ProLayout from '@ant-design/pro-layout';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { Link, connect, history, KeepAliveLayout } from 'umi';
 import { Result, Button } from 'antd';
 import Authorized from '@/utils/Authorized';
@@ -47,13 +47,6 @@ const BasicLayout = (props) => {
     },
   } = props;
   const menuDataRef = useRef([]);
-  useEffect(() => {
-    if (dispatch) {
-      dispatch({
-        type: 'user/getCurrent',
-      });
-    }
-  }, []);
   /**
    * init variables
    */
