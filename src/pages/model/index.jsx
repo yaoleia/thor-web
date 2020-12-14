@@ -16,6 +16,42 @@ const TableList = ({ models, dispatch, loading }) => {
   const [updateValues, setUpdateValues] = useState({});
   const actionRef = useRef();
   const [selectedRowsState, setSelectedRows] = useState([]);
+  const uploadRender = (reset, form, param, paramMd5) => {
+    return (
+      <>
+        <Input value={form.getFieldValue([param])} placeholder={`请上传${reset.label}`} />
+        <Dragger
+          name="file"
+          action="/api/upload"
+          fileList={[]}
+          data={() => {
+            return { md5: true, type: 'model' };
+          }}
+          onChange={(info) => {
+            const { status } = info.file;
+            if (status !== 'uploading') {
+              console.log(info.file, info.fileList);
+            }
+            if (status === 'done') {
+              message.success(`${info.file.name} 上传成功`);
+              form.setFieldsValue({
+                [param]: info.file.response[0].url,
+                [paramMd5]: info.file.response[0].md5,
+              });
+              actionRef.current.reloadAndRest();
+            } else if (status === 'error') {
+              message.error(`${info.file.name} 上传失败`);
+            }
+          }}
+        >
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+        </Dragger>
+        <Input value={form.getFieldValue([paramMd5])} />
+      </>
+    );
+  };
   const columns = [
     {
       title: '模型id',
@@ -36,45 +72,23 @@ const TableList = ({ models, dispatch, loading }) => {
       },
     },
     {
-      title: '缺陷地址',
+      title: '缺陷模型地址',
       dataIndex: 'defect_model',
       valueType: 'textarea',
       ellipsis: true,
       search: false,
+      renderFormItem: (_, { ...reset }, form) => {
+        return uploadRender(reset, form, 'defect_model', 'defect_md5');
+      },
     },
     {
-      title: '模型地址',
+      title: '尺寸模型地址',
       dataIndex: 'size_model',
       search: false,
       disabled: true,
       ellipsis: true,
-      renderFormItem: (_, { defaultRender }, form) => {
-        return defaultRender(
-          <>
-            <Input value={form.getFieldValue('size_model')} placeholder="请选择模型地址" />
-            <Dragger
-              name="file"
-              action="/api/upload"
-              fileList={[]}
-              onChange={(info) => {
-                const { status } = info.file;
-                if (status !== 'uploading') {
-                  console.log(info.file, info.fileList);
-                }
-                if (status === 'done') {
-                  message.success(`${info.file.name} 上传成功`);
-                  form.setFieldsValue({ size_model: info.file.response[0].url });
-                } else if (status === 'error') {
-                  message.error(`${info.file.name} 上传失败`);
-                }
-              }}
-            >
-              <p className="ant-upload-drag-icon">
-                <InboxOutlined />
-              </p>
-            </Dragger>
-          </>,
-        );
+      renderFormItem: (_, { ...reset }, form) => {
+        return uploadRender(reset, form, 'size_model', 'size_md5');
       },
     },
     {
