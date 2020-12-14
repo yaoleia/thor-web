@@ -2,6 +2,7 @@ import { Button, message, Select, Modal, Divider, Badge, Spin } from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import moment from 'moment';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import ProTable from '@ant-design/pro-table';
 import { queryRecord, updateRecord, removeRecord, getRecordById } from '@/services/record';
 import FabricContainer from '@/components/Fabric/fabricContainer';
@@ -41,8 +42,31 @@ const TableList = () => {
   const [stepFormValues, setStepFormValues] = useState({});
   const [detailValues, setDetailValues] = useState({});
   const [selectedRowsState, setSelectedRows] = useState([]);
+  const [dataList, setDataList] = useState([]);
   const [detailLoading, setDetailLoading] = useState(false);
   const actionRef = useRef();
+
+  const showDetail = async (record) => {
+    try {
+      setDetailLoading(true);
+      handleDetailModalVisible(true);
+      const detail = await getRecordById(record.uid);
+      detail.indexTemp = record.indexTemp;
+      setDetailValues(detail);
+    } catch (error) {
+      message.error('详情信息获取失败！');
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
+  const nextPrev = (num, disabled) => {
+    const index = dataList.findIndex((d) => d.uid === detailValues.uid);
+    const item = dataList[index + num];
+    if (disabled) return !item;
+    showDetail(item);
+  };
+
   const columns = [
     {
       title: '序号',
@@ -135,21 +159,7 @@ const TableList = () => {
             删除
           </a>
           <Divider type="vertical" />
-          <a
-            onClick={async () => {
-              try {
-                setDetailLoading(true);
-                handleDetailModalVisible(true);
-                setDetailValues(await getRecordById(record.uid));
-              } catch (error) {
-                message.error('详情信息获取失败！');
-              } finally {
-                setDetailLoading(false);
-              }
-            }}
-          >
-            详情
-          </a>
+          <a onClick={() => showDetail(record)}>详情</a>
         </>
       ),
     },
@@ -176,6 +186,7 @@ const TableList = () => {
             item.indexTemp = index + 1 + (current - 1) * pageSize;
             return item;
           });
+          setDataList(msg.data);
           return {
             data: msg.data,
             success: true,
@@ -258,7 +269,29 @@ const TableList = () => {
       <Modal
         bodyStyle={{ padding: 0 }}
         width="75%"
-        title="记录详情"
+        title={
+          <div className="detailModalTitle">
+            <span>记录详情</span>
+            {detailValues.indexTemp && (
+              <div>
+                <Button
+                  type="text"
+                  icon={<LeftOutlined />}
+                  disabled={nextPrev(-1, true)}
+                  onClick={() => nextPrev(-1)}
+                />
+                <span> {detailValues.indexTemp || ''} </span>
+                <Button
+                  type="text"
+                  shape="circle"
+                  icon={<RightOutlined />}
+                  disabled={nextPrev(1, true)}
+                  onClick={() => nextPrev(1)}
+                />
+              </div>
+            )}
+          </div>
+        }
         visible={detailModalVisible}
         onCancel={() => {
           handleDetailModalVisible(false);
