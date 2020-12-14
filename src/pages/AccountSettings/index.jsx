@@ -1,8 +1,7 @@
 import { UploadOutlined } from '@ant-design/icons';
-import { Button, Input, Upload, Form, message } from 'antd';
+import { Button, Input, Upload, Form, message, Spin } from 'antd';
 import { connect } from 'umi';
 import React, { Component } from 'react';
-import { GridContent } from '@ant-design/pro-layout';
 import styles from './style.less';
 import _ from 'lodash';
 
@@ -16,9 +15,7 @@ const AvatarView = ({ avatar, handleFinish }) => {
     action: '/api/upload',
     onChange(info) {
       if (info.file.status === 'done') {
-        const newAvatar = _.get(info, 'file.response[0].url');
-        handleFinish({ avatar: newAvatar });
-        message.success(`${info.file.name} 头像上传成功！`);
+        handleFinish({ avatar: _.get(info, 'file.response[0].url') });
       } else if (info.file.status === 'error') {
         message.error(`${info.file.name} 头像上传失败！`);
       }
@@ -46,11 +43,13 @@ class BaseView extends Component {
   view = undefined;
   formRef = React.createRef();
 
-  componentDidUpdate(preProps) {
-    const { currentUser } = this.props;
-    const { currentUser: oldUser } = preProps;
-    if (oldUser.username !== currentUser.username && this.formRef) {
+  componentDidUpdate({ currentUser: preUser, loading: preLoading }) {
+    const { currentUser, loading } = this.props;
+    if (preUser.username !== currentUser.username && this.formRef) {
       this.formRef.current.resetFields();
+    }
+    if (!loading && preLoading) {
+      message.success('个人设置保存成功！');
     }
   }
 
@@ -72,17 +71,15 @@ class BaseView extends Component {
     this.view = ref;
   };
   handleFinish = (values) => {
-    const { dispatch } = this.props;
-    dispatch({
+    this.props.dispatch({
       type: 'user/putCurrent',
       payload: { ...values },
     });
-    message.success('个人设置保存成功！');
   };
   render() {
-    const { currentUser } = this.props;
+    const { currentUser, loading = false } = this.props;
     return (
-      <GridContent>
+      <Spin spinning={loading}>
         <div className={styles.main}>
           <div className={styles.right}>
             <div className={styles.title}>个人设置</div>
@@ -158,11 +155,12 @@ class BaseView extends Component {
             </div>
           </div>
         </div>
-      </GridContent>
+      </Spin>
     );
   }
 }
 
-export default connect(({ user }) => ({
+export default connect(({ user, loading }) => ({
   currentUser: user.currentUser,
+  loading: loading.effects['user/putCurrent'],
 }))(BaseView);
