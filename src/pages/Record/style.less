@@ -11,10 +11,23 @@
   }
 }
 
+.nextPrevWrap {
+  :global {
+    div .ant-spin.ant-spin-spinning {
+      display: none;
+    }
+  }
+}
+
 :global {
   .detailModalTitle {
     display: flex;
     justify-content: space-between;
     padding-right: 60px;
+    .ant-btn-text {
+      height: 22px;
+      padding: 0;
+      line-height: 22px;
+    }
   }
 }

@@ -273,7 +273,7 @@ const TableList = () => {
           <div className="detailModalTitle">
             <span>记录详情</span>
             {detailValues.indexTemp && (
-              <div>
+              <Spin wrapperClassName={styles.nextPrevWrap} spinning={detailLoading}>
                 <Button
                   type="text"
                   icon={<LeftOutlined />}
@@ -288,7 +288,7 @@ const TableList = () => {
                   disabled={nextPrev(1, true)}
                   onClick={() => nextPrev(1)}
                 />
-              </div>
+              </Spin>
             )}
           </div>
         }
