@@ -1,8 +1,9 @@
 import { Button, message, Select, Modal, Divider, Badge, Spin } from 'antd';
-import React, { useState, useRef } from 'react';
-import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
+import React, { useState, useRef, useEffect } from 'react';
 import moment from 'moment';
+import hotkeys from 'hotkeys-js';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import { queryRecord, updateRecord, removeRecord, getRecordById } from '@/services/record';
 import FabricContainer from '@/components/Fabric/fabricContainer';
@@ -60,12 +61,23 @@ const TableList = () => {
     }
   };
 
-  const nextPrev = (num, disabled) => {
+  const nextPrev = (num = 1, disabled) => {
+    if (!detailValues.uid || detailLoading) return;
     const index = dataList.findIndex((d) => d.uid === detailValues.uid);
     const item = dataList[index + num];
     if (disabled) return !item;
+    if (!item) return;
     showDetail(item);
   };
+
+  useEffect(() => {
+    hotkeys('left,right', (event) => {
+      nextPrev(event.key === 'ArrowLeft' ? -1 : 1);
+    });
+    return function cleanup() {
+      hotkeys.unbind('left,right');
+    };
+  }, [dataList, detailValues, detailLoading]);
 
   const columns = [
     {
