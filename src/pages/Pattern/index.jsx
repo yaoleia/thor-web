@@ -55,6 +55,13 @@ const TableList = ({ patterns, dispatch, loading }) => {
   };
   const columns = [
     {
+      title: '序号',
+      valueType: 'index',
+      search: false,
+      hideInForm: true,
+      width: 80,
+    },
+    {
       title: '模板ID',
       dataIndex: 'uid',
       hideInForm: true,
@@ -102,7 +109,7 @@ const TableList = ({ patterns, dispatch, loading }) => {
     },
     {
       title: '操作',
-      width: 200,
+      width: 160,
       render: (_, record) => (
         <>
           <a
@@ -165,7 +172,7 @@ const TableList = ({ patterns, dispatch, loading }) => {
         actionRef={actionRef}
         pagination={false}
         search={{
-          labelWidth: 120,
+          labelWidth: 100,
           defaultCollapsed: false,
         }}
         toolBarRender={() => [

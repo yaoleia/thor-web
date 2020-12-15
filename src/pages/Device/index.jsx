@@ -17,6 +17,13 @@ const TableList = ({ devices, dispatch, loading }) => {
 
   const columns = [
     {
+      title: '序号',
+      valueType: 'index',
+      search: false,
+      hideInForm: true,
+      width: 80,
+    },
+    {
       title: '设备ID',
       dataIndex: 'uid',
       hideInForm: true,
@@ -79,6 +86,7 @@ const TableList = ({ devices, dispatch, loading }) => {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
+      width: 160,
       render: (_, record) => (
         <>
           <a

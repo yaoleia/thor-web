@@ -126,14 +126,14 @@ const TableList = () => {
       ),
     },
     {
-      title: '模板',
+      title: '模板名称',
       valueType: 'text',
       hideInForm: true,
       search: false,
       renderText: (_, record) => record.style.name,
     },
     {
-      title: '设备',
+      title: '设备名称',
       valueType: 'text',
       hideInForm: true,
       search: false,
@@ -149,7 +149,7 @@ const TableList = () => {
     {
       title: '操作',
       dataIndex: 'option',
-      width: 200,
+      width: 180,
       valueType: 'option',
       render: (_, record) => (
         <>
