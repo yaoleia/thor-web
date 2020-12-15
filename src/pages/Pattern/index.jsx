@@ -10,12 +10,13 @@ import UpdateForm from './components/UpdateForm';
 
 const { Dragger } = Upload;
 
-const TableList = ({ models, dispatch, loading }) => {
+const TableList = ({ patterns, dispatch, loading }) => {
   const [createModalVisible, handleModalVisible] = useState(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState(false);
   const [updateValues, setUpdateValues] = useState({});
-  const actionRef = useRef();
   const [selectedRowsState, setSelectedRows] = useState([]);
+  const actionRef = useRef();
+
   const uploadRender = (reset, form, param, paramMd5) => {
     return (
       <>
@@ -25,7 +26,7 @@ const TableList = ({ models, dispatch, loading }) => {
           action="/api/upload"
           fileList={[]}
           data={() => {
-            return { md5: true, type: 'model' };
+            return { md5: true, type: 'pattern' };
           }}
           onChange={(info) => {
             const { status } = info.file;
@@ -124,7 +125,7 @@ const TableList = ({ models, dispatch, loading }) => {
                 maskClosable: true,
                 onOk: () =>
                   dispatch({
-                    type: 'model/removeModel',
+                    type: 'pattern/remove',
                     payload: [record.uid],
                   }),
               })
@@ -136,14 +137,15 @@ const TableList = ({ models, dispatch, loading }) => {
       ),
     },
   ];
+
   useEffect(() => {
     setSelectedRows([]);
     actionRef.current?.reloadAndRest?.();
-  }, [models]);
+  }, [patterns]);
 
   const requestFilter = ({ uid: s_uid, name: s_name }) => {
-    const filtered = models.filter((model) => {
-      const { uid, name } = model;
+    const filtered = patterns.filter((pattern) => {
+      const { uid, name } = pattern;
       return (
         (!s_uid || uid.toLowerCase().includes(s_uid)) &&
         (!s_name || name.toLowerCase().includes(s_name))
@@ -155,6 +157,7 @@ const TableList = ({ models, dispatch, loading }) => {
       total: filtered.length,
     };
   };
+
   return (
     <PageContainer>
       <ProTable
@@ -207,7 +210,7 @@ const TableList = ({ models, dispatch, loading }) => {
                 maskClosable: true,
                 onOk: () =>
                   dispatch({
-                    type: 'model/removeModel',
+                    type: 'pattern/remove',
                     payload: selectedRowsState.map((row) => row.uid),
                   }),
               })
@@ -221,7 +224,7 @@ const TableList = ({ models, dispatch, loading }) => {
         <ProTable
           onSubmit={(value) => {
             dispatch({
-              type: 'model/addModel',
+              type: 'pattern/add',
               payload: { ...value },
             });
             handleModalVisible(false);
@@ -243,7 +246,7 @@ const TableList = ({ models, dispatch, loading }) => {
             onSubmit={async (value) => {
               value.uid = updateValues.uid;
               dispatch({
-                type: 'model/updateModel',
+                type: 'pattern/update',
                 payload: { ...value },
               });
               handleUpdateModalVisible(false);
@@ -259,7 +262,7 @@ const TableList = ({ models, dispatch, loading }) => {
   );
 };
 
-export default connect(({ model, loading }) => ({
-  models: model.models,
-  loading: loading.models.model,
+export default connect(({ pattern, loading }) => ({
+  patterns: pattern.patterns,
+  loading: loading.models.pattern,
 }))(TableList);

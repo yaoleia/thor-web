@@ -23,7 +23,7 @@ export async function updateDevice(params) {
   });
 }
 
-export async function bindDeviceModel(params) {
+export async function bindDevicePattern(params) {
   return request('/api/device/style', {
     method: 'POST',
     data: params,

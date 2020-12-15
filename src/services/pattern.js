@@ -1,22 +1,22 @@
 import request from '@/utils/request';
 
-export async function queryModel(params) {
+export async function queryPattern(params) {
   return request('/api/style', {
     params,
   });
 }
-export async function removeModel(params) {
+export async function removePattern(params) {
   return request(`/api/style/${params}`, {
     method: 'DELETE',
   });
 }
-export async function addModel(params) {
+export async function addPattern(params) {
   return request('/api/style', {
     method: 'POST',
     data: { ...params, method: 'post' },
   });
 }
-export async function updateModel(params) {
+export async function updatePattern(params) {
   return request(`/api/style/${params.uid}`, {
     method: 'PUT',
     data: { ...params },

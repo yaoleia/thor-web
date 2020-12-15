@@ -82,7 +82,7 @@ class Runtime extends React.PureComponent {
     const { dispatch, currentDevice } = this.props;
     this.selectModel.blur();
     dispatch({
-      type: 'device/bindModel',
+      type: 'device/bind',
       payload: {
         device_id: currentDevice.uid,
         style_id,
@@ -90,7 +90,7 @@ class Runtime extends React.PureComponent {
     });
   };
   render() {
-    const { devices, currentDevice, models, loading } = this.props;
+    const { devices, currentDevice, patterns, loading } = this.props;
     const { product } = this.state;
     const style_id = _.get(currentDevice, 'style.uid');
     return (
@@ -133,7 +133,7 @@ class Runtime extends React.PureComponent {
                 onChange={this.modelhandleChange}
                 dropdownClassName="hasUid"
               >
-                {models.map((item) => {
+                {patterns.map((item) => {
                   return (
                     <Select.Option value={item.uid} key={item.uid}>
                       <span>{item.name}</span>
@@ -153,9 +153,9 @@ class Runtime extends React.PureComponent {
   }
 }
 
-export default connect(({ device, model, loading }) => ({
+export default connect(({ device, pattern, loading }) => ({
   devices: device.devices,
   currentDevice: device.current,
-  models: model.models,
+  patterns: pattern.patterns,
   loading: loading.models.device,
 }))(Runtime);

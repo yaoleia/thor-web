@@ -29,7 +29,34 @@ const TableList = ({ devices, dispatch, loading }) => {
         rules: [
           {
             required: true,
-            message: '名称为必填项',
+          },
+        ],
+      },
+    },
+    {
+      title: '硬件服务URL',
+      dataIndex: 'camera_server',
+      valueType: 'input',
+      ellipsis: true,
+      search: false,
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+          },
+        ],
+      },
+    },
+    {
+      title: '算法服务URL',
+      dataIndex: 'model_server',
+      valueType: 'input',
+      ellipsis: true,
+      search: false,
+      formItemProps: {
+        rules: [
+          {
+            required: true,
           },
         ],
       },
@@ -38,20 +65,6 @@ const TableList = ({ devices, dispatch, loading }) => {
       title: '设备IP',
       dataIndex: 'ip',
       valueType: 'input',
-      search: false,
-    },
-    {
-      title: '硬件服务URL',
-      dataIndex: 'camera_server',
-      valueType: 'textarea',
-      ellipsis: true,
-      search: false,
-    },
-    {
-      title: '算法服务URL',
-      dataIndex: 'model_server',
-      valueType: 'textarea',
-      ellipsis: true,
       search: false,
     },
     {
@@ -88,7 +101,7 @@ const TableList = ({ devices, dispatch, loading }) => {
                 maskClosable: true,
                 onOk: () =>
                   dispatch({
-                    type: 'device/removeModel',
+                    type: 'device/remove',
                     payload: [record.uid],
                   }),
               })
@@ -170,7 +183,7 @@ const TableList = ({ devices, dispatch, loading }) => {
                 maskClosable: true,
                 onOk: () =>
                   dispatch({
-                    type: 'device/removeModel',
+                    type: 'device/remove',
                     payload: selectedRowsState.map((row) => row.uid),
                   }),
               })
@@ -184,7 +197,7 @@ const TableList = ({ devices, dispatch, loading }) => {
         <ProTable
           onSubmit={(value) => {
             dispatch({
-              type: 'device/addModel',
+              type: 'device/add',
               payload: { ...value },
             });
             handleModalVisible(false);
@@ -203,7 +216,7 @@ const TableList = ({ devices, dispatch, loading }) => {
             onSubmit={async (value) => {
               value.uid = updateValues.uid;
               dispatch({
-                type: 'device/updateModel',
+                type: 'device/update',
                 payload: { ...value },
               });
               handleUpdateModalVisible(false);

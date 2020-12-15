@@ -1,6 +1,6 @@
 import {
   queryDevice,
-  bindDeviceModel,
+  bindDevicePattern,
   addDevice,
   updateDevice,
   removeDevice,
@@ -20,7 +20,7 @@ const DeviceModel = {
         payload: Array.isArray(resp.data) ? resp.data : [],
       });
     },
-    *addModel({ payload }, { call, put, select }) {
+    *add({ payload }, { call, put, select }) {
       const resp = yield call(addDevice, payload);
       const list = yield select(({ device: { devices } }) => {
         devices.unshift(resp);
@@ -32,7 +32,7 @@ const DeviceModel = {
       });
     },
 
-    *removeModel({ payload }, { call, put, select }) {
+    *remove({ payload }, { call, put, select }) {
       yield call(removeDevice, payload);
       const list = yield select(({ device }) =>
         device.devices.filter(({ uid }) => !payload.includes(uid)),
@@ -43,7 +43,7 @@ const DeviceModel = {
       });
     },
 
-    *updateModel({ payload }, { call, put, select }) {
+    *update({ payload }, { call, put, select }) {
       const resp = yield call(updateDevice, payload);
       if (!resp) return;
       const list = yield select(({ device: { devices } }) => {
@@ -57,8 +57,8 @@ const DeviceModel = {
       });
     },
 
-    *bindModel({ payload }, { call, put, select }) {
-      const resp = yield call(bindDeviceModel, payload);
+    *bind({ payload }, { call, put, select }) {
+      const resp = yield call(bindDevicePattern, payload);
       if (!resp) return;
       const { device, style } = resp;
       if (!device || !device.uid) return;

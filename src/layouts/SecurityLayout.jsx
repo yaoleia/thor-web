@@ -26,7 +26,7 @@ class SecurityLayout extends React.Component {
       type: 'device/fetch',
     });
     dispatch({
-      type: 'model/fetch',
+      type: 'pattern/fetch',
     });
   }
 
