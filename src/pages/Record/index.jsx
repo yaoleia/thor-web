@@ -88,7 +88,7 @@ const TableList = () => {
       render: (_, record) => record.indexTemp,
     },
     {
-      title: '生产记录ID',
+      title: 'ID',
       dataIndex: 'uid',
       hideInForm: true,
       copyable: true,
@@ -280,10 +280,10 @@ const TableList = () => {
       ) : null}
       <Modal
         bodyStyle={{ padding: 0 }}
-        width="75%"
+        width="70%"
         title={
           <div className="detailModalTitle">
-            <span>记录详情</span>
+            <span>检测详情</span>
             {detailValues.indexTemp && (
               <Spin wrapperClassName={styles.nextPrevWrap} spinning={detailLoading}>
                 <Button

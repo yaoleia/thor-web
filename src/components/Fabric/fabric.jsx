@@ -200,8 +200,9 @@ class Fabric extends React.PureComponent {
   };
 
   render() {
+    const { className } = this.props;
     return (
-      <div ref={this.containerRef} {...this.props}>
+      <div ref={this.containerRef} className={className}>
         <canvas ref={this.canvasRef} />
       </div>
     );

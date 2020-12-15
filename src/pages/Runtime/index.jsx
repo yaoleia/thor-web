@@ -120,14 +120,14 @@ class Runtime extends React.PureComponent {
             </Select>
           </Form.Item>
           {currentDevice.uid && (
-            <Form.Item label="检测型号">
+            <Form.Item label="检测模板">
               <Select
                 ref={(ref) => {
                   this.selectModel = ref;
                 }}
                 disabled={loading}
                 loading={loading}
-                placeholder="当前设备还未绑定型号"
+                placeholder="当前设备还未绑定模板"
                 style={{ width: '200px' }}
                 value={style_id}
                 onChange={this.modelhandleChange}
