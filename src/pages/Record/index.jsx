@@ -130,7 +130,7 @@ const TableList = () => {
       valueType: 'text',
       hideInForm: true,
       search: false,
-      renderText: (_, record) => record.style.name,
+      renderText: (_, record) => record.pattern.name,
     },
     {
       title: '设备名称',

@@ -71,35 +71,35 @@ class Runtime extends React.PureComponent {
   };
   handleChange = (device_id) => {
     const device = this.props.devices.find((item) => item.uid === device_id);
-    this.selectDevice.blur();
+    this.deviceRef.blur();
     this.props.dispatch({
       type: 'device/setCurrent',
       payload: device,
     });
   };
 
-  modelhandleChange = async (style_id) => {
+  patternHandleChange = async (pattern_id) => {
     const { dispatch, currentDevice } = this.props;
-    this.selectModel.blur();
+    this.patternRef.blur();
     dispatch({
       type: 'device/bind',
       payload: {
         device_id: currentDevice.uid,
-        style_id,
+        pattern_id,
       },
     });
   };
   render() {
     const { devices, currentDevice, patterns, loading } = this.props;
     const { product } = this.state;
-    const style_id = _.get(currentDevice, 'style.uid');
+    const pattern_id = _.get(currentDevice, 'pattern.uid');
     return (
       <PageContainer pageHeaderRender={() => false} className={styles.runtimeContainer}>
         <Form layout="inline" className={styles.formSelect}>
           <Form.Item label="运行设备">
             <Select
               ref={(ref) => {
-                this.selectDevice = ref;
+                this.deviceRef = ref;
               }}
               disabled={loading}
               placeholder="请选择运行设备"
@@ -123,14 +123,14 @@ class Runtime extends React.PureComponent {
             <Form.Item label="检测模板">
               <Select
                 ref={(ref) => {
-                  this.selectModel = ref;
+                  this.patternRef = ref;
                 }}
                 disabled={loading}
                 loading={loading}
                 placeholder="当前设备还未绑定模板"
                 style={{ width: '240px' }}
-                value={style_id}
-                onChange={this.modelhandleChange}
+                value={pattern_id}
+                onChange={this.patternHandleChange}
                 dropdownClassName="hasUid"
               >
                 {patterns.map((item) => {

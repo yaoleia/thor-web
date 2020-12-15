@@ -60,10 +60,10 @@ const DeviceModel = {
     *bind({ payload }, { call, put, select }) {
       const resp = yield call(bindDevicePattern, payload);
       if (!resp) return;
-      const { device, style } = resp;
+      const { device, pattern } = resp;
       if (!device || !device.uid) return;
-      if (device && style) {
-        device.style = style;
+      if (device && pattern) {
+        device.pattern = pattern;
       }
       const list = yield select(({ device: { devices } }) => {
         const preDevice = devices.find((d) => d.uid === device.uid);

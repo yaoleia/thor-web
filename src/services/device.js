@@ -24,7 +24,7 @@ export async function updateDevice(params) {
 }
 
 export async function bindDevicePattern(params) {
-  return request('/api/device/style', {
+  return request('/api/device/pattern', {
     method: 'POST',
     data: params,
   });
