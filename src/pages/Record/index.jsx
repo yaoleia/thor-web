@@ -126,6 +126,20 @@ const TableList = () => {
       ),
     },
     {
+      title: '模板',
+      valueType: 'text',
+      hideInForm: true,
+      search: false,
+      renderText: (_, record) => record.style.name,
+    },
+    {
+      title: '设备',
+      valueType: 'text',
+      hideInForm: true,
+      search: false,
+      renderText: (_, record) => record.device.name,
+    },
+    {
       title: '创建时间',
       dataIndex: 'time',
       valueType: 'dateTimeRange',
