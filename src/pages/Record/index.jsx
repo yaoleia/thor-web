@@ -85,6 +85,7 @@ const TableList = () => {
       dataIndex: 'index',
       search: false,
       hideInForm: true,
+      width: 80,
       render: (_, record) => record.indexTemp,
     },
     {
@@ -92,6 +93,7 @@ const TableList = () => {
       dataIndex: 'uid',
       hideInForm: true,
       copyable: true,
+      ellipsis: true,
     },
     {
       title: '缺陷状态',
