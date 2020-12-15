@@ -12,8 +12,9 @@ const TableList = ({ devices, dispatch, loading }) => {
   const [createModalVisible, handleModalVisible] = useState(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState(false);
   const [updateValues, setUpdateValues] = useState({});
-  const actionRef = useRef();
   const [selectedRowsState, setSelectedRows] = useState([]);
+  const actionRef = useRef();
+
   const columns = [
     {
       title: '设备ID',
@@ -77,7 +78,7 @@ const TableList = ({ devices, dispatch, loading }) => {
           </a>
           <Divider type="vertical" />
           <a
-            onClick={() => {
+            onClick={() =>
               Modal.confirm({
                 title: '删除设备',
                 content: `确定删除设备(${record.uid})吗？`,
@@ -90,8 +91,8 @@ const TableList = ({ devices, dispatch, loading }) => {
                     type: 'device/removeModel',
                     payload: [record.uid],
                   }),
-              });
-            }}
+              })
+            }
           >
             删除
           </a>
@@ -157,13 +158,23 @@ const TableList = ({ devices, dispatch, loading }) => {
           }
         >
           <Button
-            onClick={async () => {
-              if (!selectedRowsState) return true;
-              dispatch({
-                type: 'device/removeModel',
-                payload: selectedRowsState.map((row) => row.uid),
-              });
-            }}
+            onClick={() =>
+              Modal.confirm({
+                title: '删除设备',
+                content: `确定删除选中的${selectedRowsState.length}个设备(${selectedRowsState.map(
+                  (r) => r.uid,
+                )})吗？`,
+                okText: '确认',
+                cancelText: '取消',
+                centered: true,
+                maskClosable: true,
+                onOk: () =>
+                  dispatch({
+                    type: 'device/removeModel',
+                    payload: selectedRowsState.map((row) => row.uid),
+                  }),
+              })
+            }
           >
             批量删除
           </Button>

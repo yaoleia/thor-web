@@ -114,9 +114,9 @@ const TableList = ({ models, dispatch, loading }) => {
           </a>
           <Divider type="vertical" />
           <a
-            onClick={() => {
+            onClick={() =>
               Modal.confirm({
-                title: '删除设备',
+                title: '删除模板',
                 content: `确定删除模板(${record.uid})吗？`,
                 okText: '确认',
                 cancelText: '取消',
@@ -127,8 +127,8 @@ const TableList = ({ models, dispatch, loading }) => {
                     type: 'model/removeModel',
                     payload: [record.uid],
                   }),
-              });
-            }}
+              })
+            }
           >
             删除
           </a>
@@ -195,13 +195,23 @@ const TableList = ({ models, dispatch, loading }) => {
           }
         >
           <Button
-            onClick={async () => {
-              if (!selectedRowsState) return true;
-              dispatch({
-                type: 'model/removeModel',
-                payload: selectedRowsState.map((row) => row.uid),
-              });
-            }}
+            onClick={() =>
+              Modal.confirm({
+                title: '删除模板',
+                content: `确定删除选中的${selectedRowsState.length}个模板(${selectedRowsState.map(
+                  (r) => r.uid,
+                )})吗？`,
+                okText: '确认',
+                cancelText: '取消',
+                centered: true,
+                maskClosable: true,
+                onOk: () =>
+                  dispatch({
+                    type: 'model/removeModel',
+                    payload: selectedRowsState.map((row) => row.uid),
+                  }),
+              })
+            }
           >
             批量删除
           </Button>
