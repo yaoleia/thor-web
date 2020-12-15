@@ -26,14 +26,16 @@ class Fabric extends React.PureComponent {
   }
 
   getInner = () => {
-    if (this.containerRef.current == null) {
-      return false;
+    const containerRef = this.containerRef.current;
+    if (!containerRef) return;
+    const { clientHeight, clientWidth } = containerRef;
+    if (clientHeight && clientWidth) {
+      this.inner = {
+        width: clientWidth,
+        height: clientHeight,
+      };
     }
-    const { clientHeight, clientWidth } = this.containerRef.current;
-    return {
-      width: clientWidth,
-      height: clientHeight,
-    };
+    return this.inner;
   };
 
   clearImgElement = (loaded) => {
@@ -91,6 +93,7 @@ class Fabric extends React.PureComponent {
     let zoom = 1;
     const inner = this.getInner();
     if (!params) params = inner;
+    if (!inner) return;
     const { height: eleHeight, width: eleWidth } = inner;
     const rate = eleWidth / eleHeight;
     const imgRate = params.width / params.height;
@@ -154,12 +157,10 @@ class Fabric extends React.PureComponent {
     }
   }
 
-  minValue = (param) => {
-    return {
-      left: Math.min(...param.map((item) => item[0])),
-      top: Math.min(...param.map((item) => item[1])),
-    };
-  };
+  minValue = (param) => ({
+    left: Math.min(...param.map((item) => item[0])),
+    top: Math.min(...param.map((item) => item[1])),
+  });
 
   transform = (canvas) => {
     const center = canvas.getVpCenter();
