@@ -60,10 +60,10 @@ export default defineConfig({
               component: './Record',
             },
             {
-              name: '模型管理',
-              icon: 'DatabaseOutlined',
-              path: '/model',
-              component: './model',
+              name: '模板管理',
+              icon: 'LayoutOutlined',
+              path: '/pattern',
+              component: './Pattern',
             },
             {
               name: '设备管理',

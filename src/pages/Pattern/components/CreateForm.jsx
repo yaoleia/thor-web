@@ -6,7 +6,7 @@ const CreateForm = (props) => {
   return (
     <Modal
       destroyOnClose
-      title="新建模型"
+      title="新建模板"
       visible={modalVisible}
       onCancel={() => onCancel()}
       footer={null}

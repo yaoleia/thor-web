@@ -54,13 +54,13 @@ const TableList = ({ models, dispatch, loading }) => {
   };
   const columns = [
     {
-      title: '模型id',
+      title: '模板ID',
       dataIndex: 'uid',
       hideInForm: true,
       copyable: true,
     },
     {
-      title: '模型名称',
+      title: '模板名称',
       dataIndex: 'name',
       formItemProps: {
         rules: [
@@ -117,7 +117,7 @@ const TableList = ({ models, dispatch, loading }) => {
             onClick={() => {
               Modal.confirm({
                 title: '删除设备',
-                content: `确定删除模型(${record.uid})吗？`,
+                content: `确定删除模板(${record.uid})吗？`,
                 okText: '确认',
                 cancelText: '取消',
                 centered: true,
@@ -167,7 +167,7 @@ const TableList = ({ models, dispatch, loading }) => {
         }}
         toolBarRender={() => [
           <Button type="primary" key="show" onClick={() => handleModalVisible(true)}>
-            <PlusOutlined /> 添加模型
+            <PlusOutlined /> 添加模板
           </Button>,
         ]}
         request={requestFilter}

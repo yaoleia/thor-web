@@ -103,7 +103,7 @@ class Runtime extends React.PureComponent {
               }}
               disabled={loading}
               placeholder="请选择运行设备"
-              style={{ width: '200px' }}
+              style={{ width: '240px' }}
               value={currentDevice.uid}
               onChange={this.handleChange}
               dropdownClassName="hasUid"
@@ -128,7 +128,7 @@ class Runtime extends React.PureComponent {
                 disabled={loading}
                 loading={loading}
                 placeholder="当前设备还未绑定模板"
-                style={{ width: '200px' }}
+                style={{ width: '240px' }}
                 value={style_id}
                 onChange={this.modelhandleChange}
                 dropdownClassName="hasUid"

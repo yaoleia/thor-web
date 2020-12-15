@@ -20,7 +20,7 @@ class FabricContainer extends React.PureComponent {
       <div className={styles.fabricContainer}>
         <ProCard colSpan="25%" className={styles.leftMsg}>
           {product.uid && (
-            <Descriptions column={1} layout="vertical" size="small" title={`ID: ${product.uid}`}>
+            <Descriptions column={1} layout="vertical" size="middle" title={`ID: ${product.uid}`}>
               <Descriptions.Item label="检测时间">
                 {moment(product.time).format('YYYY-MM-DD HH:mm:ss')}
               </Descriptions.Item>

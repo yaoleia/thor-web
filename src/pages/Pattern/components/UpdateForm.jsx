@@ -6,7 +6,7 @@ const UpdateForm = (props) => {
   return (
     <Modal
       destroyOnClose
-      title="修改模型"
+      title="修改模板"
       visible={modalVisible}
       onCancel={() => onCancel()}
       footer={null}

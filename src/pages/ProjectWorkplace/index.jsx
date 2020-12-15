@@ -56,8 +56,8 @@ const ProjectWorkplace = ({ location: { query = {} }, currentUser }) => {
               </Button>
             )}
             {current === steps.length - 1 && (
-              <Button type="primary" onClick={() => message.success('模型已保存!')}>
-                保存模型
+              <Button type="primary" onClick={() => message.success('模板已保存!')}>
+                保存模板
               </Button>
             )}
           </div>

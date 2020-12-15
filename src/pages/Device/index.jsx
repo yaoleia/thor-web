@@ -40,14 +40,14 @@ const TableList = ({ devices, dispatch, loading }) => {
       search: false,
     },
     {
-      title: '硬件URL',
+      title: '硬件服务URL',
       dataIndex: 'camera_server',
       valueType: 'textarea',
       ellipsis: true,
       search: false,
     },
     {
-      title: '模型URL',
+      title: '算法服务URL',
       dataIndex: 'model_server',
       valueType: 'textarea',
       ellipsis: true,
