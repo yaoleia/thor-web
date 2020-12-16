@@ -240,6 +240,9 @@ const TableList = ({ patterns, dispatch, loading }) => {
   useEffect(() => {
     setSelectedRows([]);
     actionRef.current?.reloadAndRest?.();
+    dispatch({
+      type: 'device/fetch',
+    });
   }, [patterns]);
 
   const requestFilter = ({ uid: s_uid, name: s_name }) => {
