@@ -1,14 +1,51 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { PlusOutlined, InboxOutlined } from '@ant-design/icons';
-import { Button, message, Input, Upload, Divider, Modal } from 'antd';
+import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { Button, message, Image, Upload, Divider, Modal, Typography } from 'antd';
 import { connect } from 'umi';
+import lodash from 'lodash';
 import moment from 'moment';
+import Fabric from '@/components/Fabric/fabric';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
+import styles from './style.less';
 
+const { Paragraph, Text, Link } = Typography;
 const { Dragger } = Upload;
+
+const SampleView = ({ value, onChange }) => {
+  const props = {
+    data: {
+      type: 'sample',
+    },
+    className: styles.sampleUpload,
+    showUploadList: false,
+    name: 'file',
+    action: '/api/upload',
+    onChange(info) {
+      if (info.file.status === 'done') {
+        onChange(lodash.get(info, 'file.response[0].url'));
+      } else if (info.file.status === 'error') {
+        message.error(`${info.file.name} 模板图上传失败！`);
+      }
+    },
+  };
+  const UploadButton = (
+    <div className={styles.uploadButton}>
+      <PlusOutlined />
+    </div>
+  );
+  return (
+    <Upload {...props}>
+      {value ? (
+        <Fabric product={{ thumbnail_url: value, uid: 1 }} className={styles.sampleImage} />
+      ) : (
+        UploadButton
+      )}
+    </Upload>
+  );
+};
 
 const TableList = ({ patterns, dispatch, loading }) => {
   const [createModalVisible, handleModalVisible] = useState(false);
@@ -17,59 +54,85 @@ const TableList = ({ patterns, dispatch, loading }) => {
   const [selectedRowsState, setSelectedRows] = useState([]);
   const actionRef = useRef();
 
-  const uploadRender = (reset, form, param, paramMd5) => {
+  const UploadRender = ({ form, value, paramMd5, param }) => {
     return (
-      <>
-        <Input value={form.getFieldValue([param])} placeholder={`请上传${reset.label}`} />
-        <Dragger
-          name="file"
-          action="/api/upload"
-          fileList={[]}
-          data={() => {
-            return { md5: true, type: 'pattern' };
-          }}
-          onChange={(info) => {
-            const { status } = info.file;
-            if (status !== 'uploading') {
-              console.log(info.file, info.fileList);
-            }
-            if (status === 'done') {
-              message.success(`${info.file.name} 上传成功`);
-              form.setFieldsValue({
-                [param]: info.file.response[0].url,
-                [paramMd5]: info.file.response[0].md5,
-              });
-              actionRef.current.reloadAndRest();
-            } else if (status === 'error') {
-              message.error(`${info.file.name} 上传失败`);
-            }
-          }}
-        >
-          <p className="ant-upload-drag-icon">
-            <InboxOutlined />
-          </p>
-        </Dragger>
-        <Input value={form.getFieldValue([paramMd5])} />
-      </>
+      <Dragger
+        className={styles.uploadDragger}
+        name="file"
+        action="/api/upload"
+        showUploadList={false}
+        fileList={[]}
+        data={{ md5: true, type: 'pattern' }}
+        onChange={(info) => {
+          const { status } = info.file;
+          if (status === 'done') {
+            message.success(`${info.file.name} 上传模型成功`);
+            const { url, md5 } = info.file.response[0];
+            form.setFieldsValue({
+              [param]: url,
+              [paramMd5]: md5,
+            });
+          } else if (status === 'error') {
+            message.error(`${info.file.name} 上传模型失败`);
+          }
+        }}
+      >
+        {value && (
+          <>
+            <Paragraph
+              ellipsis={{ rows: 2 }}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
+              <Text keyboard>url</Text>
+              <Link href={value} target="_blank">
+                {value}
+              </Link>
+            </Paragraph>
+            <Paragraph ellipsis={{ rows: 1 }}>
+              <Text keyboard>md5</Text> <Text>{form.getFieldValue([paramMd5])}</Text>
+            </Paragraph>
+          </>
+        )}
+        <Text code className="ant-upload-text">
+          <UploadOutlined /> 点击/拖拽到该区域内上传
+        </Text>
+      </Dragger>
     );
   };
+
   const columns = [
+    {
+      order: 7,
+      dataIndex: 'defect_md5',
+      search: false,
+      hideInTable: true,
+      valueType: 'input',
+      fieldProps: {
+        style: {
+          display: 'none',
+        },
+      },
+    },
     {
       title: '序号',
       valueType: 'index',
       search: false,
       hideInForm: true,
-      width: 80,
+      width: 60,
     },
     {
       title: '模板ID',
       dataIndex: 'uid',
       hideInForm: true,
       copyable: true,
+      width: 150,
     },
     {
       title: '模板名称',
       dataIndex: 'name',
+      order: 6,
       formItemProps: {
         rules: [
           {
@@ -78,26 +141,55 @@ const TableList = ({ patterns, dispatch, loading }) => {
           },
         ],
       },
+      width: 180,
     },
     {
-      title: '缺陷模型地址',
-      dataIndex: 'defect_model',
-      valueType: 'textarea',
-      ellipsis: true,
+      dataIndex: 'size_md5',
       search: false,
-      renderFormItem: (_, { ...reset }, form) => {
-        return uploadRender(reset, form, 'defect_model', 'defect_md5');
+      order: 5,
+      hideInTable: true,
+      valueType: 'input',
+      fieldProps: {
+        style: {
+          display: 'none',
+        },
       },
     },
     {
-      title: '尺寸模型地址',
+      title: '模板图',
+      order: 3,
+      dataIndex: 'sample_image',
+      search: false,
+      width: 220,
+      renderFormItem: () => <SampleView />,
+      render: (_, record) => <Image width={200} src={record.sample_image} />,
+    },
+    {
+      title: '缺陷模型',
+      order: 4,
+      dataIndex: 'defect_model',
+      ellipsis: true,
+      search: false,
+      renderFormItem: (_, __, form) => (
+        <UploadRender form={form} param="defect_model" paramMd5="defect_md5" />
+      ),
+    },
+    {
+      title: '尺寸模型',
+      order: 2,
       dataIndex: 'size_model',
       search: false,
-      disabled: true,
       ellipsis: true,
-      renderFormItem: (_, { ...reset }, form) => {
-        return uploadRender(reset, form, 'size_model', 'size_md5');
-      },
+      renderFormItem: (_, __, form) => (
+        <UploadRender form={form} param="size_model" paramMd5="size_md5" />
+      ),
+    },
+    {
+      title: '尺寸标准值',
+      order: 1,
+      dataIndex: 'size_standard',
+      search: false,
+      hideInTable: true,
     },
     {
       title: '创建时间',
@@ -227,7 +319,11 @@ const TableList = ({ patterns, dispatch, loading }) => {
           </Button>
         </FooterToolbar>
       )}
-      <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
+      <CreateForm
+        wrapClassName={styles.patternForm}
+        onCancel={() => handleModalVisible(false)}
+        modalVisible={createModalVisible}
+      >
         <ProTable
           onSubmit={(value) => {
             dispatch({
@@ -243,6 +339,7 @@ const TableList = ({ patterns, dispatch, loading }) => {
       </CreateForm>
       {updateValues && Object.keys(updateValues).length ? (
         <UpdateForm
+          wrapClassName={styles.patternForm}
           onCancel={() => {
             handleUpdateModalVisible(false);
             setUpdateValues({});
@@ -250,7 +347,7 @@ const TableList = ({ patterns, dispatch, loading }) => {
           modalVisible={updateModalVisible}
         >
           <ProTable
-            onSubmit={async (value) => {
+            onSubmit={(value) => {
               value.uid = updateValues.uid;
               dispatch({
                 type: 'pattern/update',

@@ -1,0 +1,65 @@
+@import '~antd/es/style/themes/default.less';
+
+.uploadDragger {
+  padding: 0 15px;
+  text-align: left !important;
+  word-break: break-all;
+  :global {
+    .ant-upload-drag-container {
+      width: 100%;
+      height: 170px;
+    }
+    .ant-upload-text {
+      display: block;
+      margin: 30px 0 0 !important;
+      color: @primary-color !important;
+      text-align: center;
+      .anticon-upload {
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
+.patternForm {
+  :global {
+    .ant-modal {
+      width: 1000px !important;
+    }
+    .ant-modal-body {
+      .ant-form.ant-form-vertical {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+      .ant-form-item {
+        width: 440px;
+      }
+      .ant-form-item:nth-child(1) {
+        display: none;
+      }
+    }
+  }
+}
+
+.sampleUpload {
+  .uploadButton {
+    width: 100%;
+    height: 100%;
+    padding-top: 60px;
+    font-size: 18px;
+    text-align: center;
+  }
+  .sampleImage {
+    width: 440px;
+    height: 204px;
+  }
+  :global {
+    .canvas-container,
+    .ant-upload {
+      display: block;
+      width: 440px;
+      height: 204px;
+    }
+  }
+}
