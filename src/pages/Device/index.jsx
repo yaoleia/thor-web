@@ -41,20 +41,6 @@ const TableList = ({ devices, dispatch, loading }) => {
       },
     },
     {
-      title: '硬件服务URL',
-      dataIndex: 'camera_server',
-      valueType: 'input',
-      ellipsis: true,
-      search: false,
-      formItemProps: {
-        rules: [
-          {
-            required: true,
-          },
-        ],
-      },
-    },
-    {
       title: '算法服务URL',
       dataIndex: 'model_server',
       valueType: 'input',
@@ -67,6 +53,13 @@ const TableList = ({ devices, dispatch, loading }) => {
           },
         ],
       },
+    },
+    {
+      title: '硬件服务URL',
+      dataIndex: 'camera_server',
+      valueType: 'input',
+      ellipsis: true,
+      search: false,
     },
     {
       title: '设备IP',
