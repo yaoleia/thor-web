@@ -3,10 +3,11 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { connect } from 'umi';
 import _ from 'lodash';
 import io from 'socket.io-client';
-import { Select, Form, message, Tag } from 'antd';
+import { Select, Form, message, Tag, Image, Typography } from 'antd';
 import FabricContainer from '@/components/Fabric/fabricContainer';
 import styles from './style.less';
 
+const { Text } = Typography;
 class Runtime extends React.PureComponent {
   state = { product: {} };
 
@@ -112,7 +113,7 @@ class Runtime extends React.PureComponent {
                 devices.map((item) => {
                   return (
                     <Select.Option value={item.uid} key={item.uid}>
-                      <span>{item.name}</span>
+                      <Text ellipsis>{item.name}</Text>
                       <Tag>{item.uid}</Tag>
                     </Select.Option>
                   );
@@ -136,8 +137,12 @@ class Runtime extends React.PureComponent {
                 {patterns.map((item) => {
                   return (
                     <Select.Option value={item.uid} key={item.uid}>
-                      <span>{item.name}</span>
-                      <Tag>{item.uid}</Tag>
+                      <Text ellipsis>{item.name}</Text>
+                      {item.sample_image ? (
+                        <Image src={item.sample_image} preview={false} width={110} />
+                      ) : (
+                        <Tag>{item.uid}</Tag>
+                      )}
                     </Select.Option>
                   );
                 })}

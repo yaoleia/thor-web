@@ -43,23 +43,22 @@
 }
 
 .sampleUpload {
-  .uploadButton {
-    width: 100%;
-    height: 100%;
-    padding-top: 60px;
-    font-size: 18px;
-    text-align: center;
-  }
-  .sampleImage {
-    width: 440px;
-    height: 204px;
-  }
   :global {
     .canvas-container,
     .ant-upload {
-      display: block;
-      width: 440px;
-      height: 204px;
+      height: 202px !important;
+      padding: 0 !important;
+    }
+  }
+}
+
+:global {
+  .ant-upload.ant-upload-drag {
+    .ant-input-clear-icon {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 10px;
     }
   }
 }

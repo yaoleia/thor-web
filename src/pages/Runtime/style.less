@@ -5,8 +5,12 @@
     margin: 12px 20px;
     :global {
       .ant-select-selection-item {
+        .ant-image,
         .ant-tag {
           display: none;
+        }
+        .ant-image {
+          margin-left: 10px;
         }
       }
     }
@@ -18,5 +22,15 @@
   }
   .fabricDiv {
     height: calc(100vh - 104px);
+  }
+}
+
+:global {
+  .hasUid {
+    .ant-select-item-option-content {
+      .ant-image {
+        flex-shrink: 0;
+      }
+    }
   }
 }

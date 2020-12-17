@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { PlusOutlined, UploadOutlined, CloseCircleFilled } from '@ant-design/icons';
 import { Button, message, Image, Upload, Divider, Modal, Typography } from 'antd';
 import { connect } from 'umi';
 import lodash from 'lodash';
@@ -31,19 +31,77 @@ const SampleView = ({ value, onChange }) => {
       }
     },
   };
-  const UploadButton = (
-    <div className={styles.uploadButton}>
-      <PlusOutlined />
-    </div>
-  );
   return (
-    <Upload {...props}>
-      {value ? (
-        <Fabric product={{ thumbnail_url: value, uid: 1 }} className={styles.sampleImage} />
-      ) : (
-        UploadButton
+    <Dragger {...props}>
+      {value ? <Fabric product={{ thumbnail_url: value, uid: 1 }} /> : <PlusOutlined />}
+      {value && (
+        <CloseCircleFilled
+          role="button"
+          className="ant-input-clear-icon"
+          onClick={(e) => {
+            onChange('');
+            e.stopPropagation();
+          }}
+        />
       )}
-    </Upload>
+    </Dragger>
+  );
+};
+
+const UploadRender = ({ form, value, paramMd5, param }) => {
+  return (
+    <Dragger
+      className={styles.uploadDragger}
+      name="file"
+      action="/api/upload"
+      showUploadList={false}
+      fileList={[]}
+      data={{ md5: true, type: 'pattern' }}
+      onChange={(info) => {
+        const { status } = info.file;
+        if (status === 'done') {
+          message.success(`${info.file.name} 上传模型成功`);
+          const { url, md5 } = info.file.response[0];
+          form.setFieldsValue({
+            [param]: url,
+            [paramMd5]: md5,
+          });
+        } else if (status === 'error') {
+          message.error(`${info.file.name} 上传模型失败`);
+        }
+      }}
+    >
+      {value && (
+        <Paragraph
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <Paragraph ellipsis={{ rows: 2 }}>
+            <Text keyboard>url</Text>
+            <Link href={value} target="_blank">
+              {value}
+            </Link>
+          </Paragraph>
+          <Paragraph ellipsis={{ rows: 1 }}>
+            <Text keyboard>md5</Text> <Text>{form.getFieldValue([paramMd5])}</Text>
+          </Paragraph>
+          <CloseCircleFilled
+            role="button"
+            className="ant-input-clear-icon"
+            onClick={() => {
+              form.setFieldsValue({
+                [param]: '',
+                [paramMd5]: '',
+              });
+            }}
+          />
+        </Paragraph>
+      )}
+      <Text code className="ant-upload-text">
+        <UploadOutlined /> 点击/拖拽到该区域内上传
+      </Text>
+    </Dragger>
   );
 };
 
@@ -53,54 +111,6 @@ const TableList = ({ patterns, dispatch, loading }) => {
   const [updateValues, setUpdateValues] = useState({});
   const [selectedRowsState, setSelectedRows] = useState([]);
   const actionRef = useRef();
-
-  const UploadRender = ({ form, value, paramMd5, param }) => {
-    return (
-      <Dragger
-        className={styles.uploadDragger}
-        name="file"
-        action="/api/upload"
-        showUploadList={false}
-        fileList={[]}
-        data={{ md5: true, type: 'pattern' }}
-        onChange={(info) => {
-          const { status } = info.file;
-          if (status === 'done') {
-            message.success(`${info.file.name} 上传模型成功`);
-            const { url, md5 } = info.file.response[0];
-            form.setFieldsValue({
-              [param]: url,
-              [paramMd5]: md5,
-            });
-          } else if (status === 'error') {
-            message.error(`${info.file.name} 上传模型失败`);
-          }
-        }}
-      >
-        {value && (
-          <>
-            <Paragraph
-              ellipsis={{ rows: 2 }}
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            >
-              <Text keyboard>url</Text>
-              <Link href={value} target="_blank">
-                {value}
-              </Link>
-            </Paragraph>
-            <Paragraph ellipsis={{ rows: 1 }}>
-              <Text keyboard>md5</Text> <Text>{form.getFieldValue([paramMd5])}</Text>
-            </Paragraph>
-          </>
-        )}
-        <Text code className="ant-upload-text">
-          <UploadOutlined /> 点击/拖拽到该区域内上传
-        </Text>
-      </Dragger>
-    );
-  };
 
   const columns = [
     {
@@ -272,7 +282,7 @@ const TableList = ({ patterns, dispatch, loading }) => {
         }}
         toolBarRender={() => [
           <Button type="primary" key="show" onClick={() => handleModalVisible(true)}>
-            <PlusOutlined /> 添加模板
+            <PlusOutlined /> 新建模板
           </Button>,
         ]}
         request={requestFilter}
