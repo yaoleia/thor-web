@@ -7,8 +7,7 @@ import moment from 'moment';
 import Fabric from '@/components/Fabric/fabric';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
-import CreateForm from './components/CreateForm';
-import UpdateForm from './components/UpdateForm';
+import ModalForm from '@/components/ModalForm';
 import styles from './style.less';
 
 const { Paragraph, Text, Link } = Typography;
@@ -271,7 +270,7 @@ const TableList = ({ patterns, dispatch, loading }) => {
   };
 
   return (
-    <PageContainer>
+    <PageContainer extra={<Button type="primary">缺陷类型</Button>}>
       <ProTable
         loading={loading}
         actionRef={actionRef}
@@ -290,7 +289,6 @@ const TableList = ({ patterns, dispatch, loading }) => {
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
         }}
-        headerTitle="查询表格"
         rowKey="uid"
       />
       {selectedRowsState?.length > 0 && (
@@ -332,10 +330,11 @@ const TableList = ({ patterns, dispatch, loading }) => {
           </Button>
         </FooterToolbar>
       )}
-      <CreateForm
+      <ModalForm
         wrapClassName={styles.patternForm}
         onCancel={() => handleModalVisible(false)}
         modalVisible={createModalVisible}
+        title="新建模板"
       >
         <ProTable
           onSubmit={(value) => {
@@ -349,15 +348,16 @@ const TableList = ({ patterns, dispatch, loading }) => {
           type="form"
           columns={columns}
         />
-      </CreateForm>
+      </ModalForm>
       {updateValues && Object.keys(updateValues).length ? (
-        <UpdateForm
+        <ModalForm
           wrapClassName={styles.patternForm}
           onCancel={() => {
             handleUpdateModalVisible(false);
             setUpdateValues({});
           }}
           modalVisible={updateModalVisible}
+          title="修改模板"
         >
           <ProTable
             onSubmit={(value) => {
@@ -373,7 +373,7 @@ const TableList = ({ patterns, dispatch, loading }) => {
             form={{ initialValues: updateValues }}
             columns={columns}
           />
-        </UpdateForm>
+        </ModalForm>
       ) : null}
     </PageContainer>
   );

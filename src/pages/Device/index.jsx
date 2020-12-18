@@ -5,8 +5,7 @@ import { connect } from 'umi';
 import moment from 'moment';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
-import CreateForm from './components/CreateForm';
-import UpdateForm from './components/UpdateForm';
+import ModalForm from '@/components/ModalForm';
 
 const TableList = ({ devices, dispatch, loading }) => {
   const [createModalVisible, handleModalVisible] = useState(false);
@@ -194,7 +193,11 @@ const TableList = ({ devices, dispatch, loading }) => {
           </Button>
         </FooterToolbar>
       )}
-      <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
+      <ModalForm
+        onCancel={() => handleModalVisible(false)}
+        modalVisible={createModalVisible}
+        title="添加设备"
+      >
         <ProTable
           onSubmit={(value) => {
             dispatch({
@@ -207,11 +210,12 @@ const TableList = ({ devices, dispatch, loading }) => {
           type="form"
           columns={columns}
         />
-      </CreateForm>
+      </ModalForm>
       {updateValues && Object.keys(updateValues).length ? (
-        <UpdateForm
+        <ModalForm
           onCancel={() => handleUpdateModalVisible(false)}
           modalVisible={updateModalVisible}
+          title="修改设备"
         >
           <ProTable
             onSubmit={async (value) => {
@@ -227,7 +231,7 @@ const TableList = ({ devices, dispatch, loading }) => {
             form={{ initialValues: updateValues }}
             columns={columns}
           />
-        </UpdateForm>
+        </ModalForm>
       ) : null}
     </PageContainer>
   );

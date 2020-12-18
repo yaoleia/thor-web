@@ -7,7 +7,7 @@ import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import { queryRecord, updateRecord, removeRecord, getRecordById } from '@/services/record';
 import FabricContainer from '@/components/Fabric/fabricContainer';
-import UpdateForm from './components/UpdateForm';
+import ModalForm from '@/components/ModalForm';
 import styles from './style.less';
 
 const { Option } = Select;
@@ -269,12 +269,13 @@ const TableList = () => {
       )}
 
       {stepFormValues && Object.keys(stepFormValues).length ? (
-        <UpdateForm
+        <ModalForm
           onCancel={() => {
             handleUpdateModalVisible(false);
             setStepFormValues({});
           }}
-          updateModalVisible={updateModalVisible}
+          modalVisible={updateModalVisible}
+          title="修改生产记录"
         >
           <ProTable
             onSubmit={async (value) => {
@@ -292,7 +293,7 @@ const TableList = () => {
             form={{ initialValues: stepFormValues }}
             columns={columns}
           />
-        </UpdateForm>
+        </ModalForm>
       ) : null}
       <Modal
         bodyStyle={{ padding: 0 }}
