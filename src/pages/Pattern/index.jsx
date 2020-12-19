@@ -4,6 +4,7 @@ import { Button, message, Image, Upload, Divider, Modal, Typography } from 'antd
 import { connect } from 'umi';
 import lodash from 'lodash';
 import moment from 'moment';
+import DefectType from '@/components/DefectType';
 import Fabric from '@/components/Fabric/fabric';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
@@ -105,6 +106,7 @@ const UploadRender = ({ form, value, paramMd5, param }) => {
 };
 
 const TableList = ({ patterns, dispatch, loading }) => {
+  const [defectTypeModalVisible, handleDefectTypeModalVisible] = useState(false);
   const [createModalVisible, handleModalVisible] = useState(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState(false);
   const [updateValues, setUpdateValues] = useState({});
@@ -150,7 +152,6 @@ const TableList = ({ patterns, dispatch, loading }) => {
           },
         ],
       },
-      width: 180,
     },
     {
       dataIndex: 'size_md5',
@@ -210,7 +211,6 @@ const TableList = ({ patterns, dispatch, loading }) => {
     },
     {
       title: '操作',
-      width: 160,
       render: (_, record) => (
         <>
           <a
@@ -270,7 +270,13 @@ const TableList = ({ patterns, dispatch, loading }) => {
   };
 
   return (
-    <PageContainer extra={<Button type="primary">缺陷类型</Button>}>
+    <PageContainer
+      extra={
+        <Button type="primary" onClick={() => handleDefectTypeModalVisible(true)}>
+          缺陷类型
+        </Button>
+      }
+    >
       <ProTable
         loading={loading}
         actionRef={actionRef}
@@ -330,6 +336,18 @@ const TableList = ({ patterns, dispatch, loading }) => {
           </Button>
         </FooterToolbar>
       )}
+      <ModalForm
+        onCancel={() => handleDefectTypeModalVisible(false)}
+        modalVisible={defectTypeModalVisible}
+        title="缺陷类型配置"
+        width="800px"
+        bodyStyle={{
+          height: '60vh',
+          overflow: 'auto',
+        }}
+      >
+        <DefectType></DefectType>
+      </ModalForm>
       <ModalForm
         wrapClassName={styles.patternForm}
         onCancel={() => handleModalVisible(false)}

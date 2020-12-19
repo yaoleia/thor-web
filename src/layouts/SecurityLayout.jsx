@@ -28,6 +28,9 @@ class SecurityLayout extends React.Component {
     dispatch({
       type: 'pattern/fetch',
     });
+    dispatch({
+      type: 'defect_type/fetch',
+    });
   }
 
   render() {
