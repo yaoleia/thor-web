@@ -19,7 +19,7 @@ const ColorPicker = ({ onChange, value }) => {
       }
       trigger="click"
     >
-      <Button>
+      <Button type="text">
         {value ? (
           <Text style={{ background: value }} code>
             {value}

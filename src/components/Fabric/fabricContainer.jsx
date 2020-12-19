@@ -1,16 +1,24 @@
 import React from 'react';
-import Fabric from './fabric';
+import { connect } from 'umi';
 import _ from 'lodash';
-import ProCard from '@ant-design/pro-card';
 import moment from 'moment';
 import { Tag, Card, Descriptions } from 'antd';
+import ProCard from '@ant-design/pro-card';
+import Fabric from './fabric';
 import styles from './style.less';
 
 class FabricContainer extends React.PureComponent {
-  getGroup = (arr) => {
+  getGroup = (arr, attr = 'label') => {
     if (!Array.isArray(arr) || !arr.length) return;
-    return _.groupBy(arr, 'label');
+    return _.groupBy(arr, attr);
   };
+
+  getTypeConfig = (type) => {
+    const { types = [] } = this.props;
+    const groupType = this.getGroup(types, 'field');
+    return _.get(groupType[type], '[0]') || { name: type, color: '#888' };
+  };
+
   render() {
     const { product } = this.props;
     const { defect_items, size_items, size_alarm, defect_alarm } = product;
@@ -27,8 +35,8 @@ class FabricContainer extends React.PureComponent {
               {defect_detail && (
                 <Descriptions.Item className={styles.defectDetail} label="瑕疵缺陷">
                   {Object.keys(defect_detail).map((defect) => (
-                    <Tag key={defect}>
-                      {defect}: {defect_detail[defect].length}
+                    <Tag color={this.getTypeConfig(defect).color} key={defect}>
+                      {this.getTypeConfig(defect).name}: {defect_detail[defect].length}
                     </Tag>
                   ))}
                 </Descriptions.Item>
@@ -59,9 +67,15 @@ class FabricContainer extends React.PureComponent {
             </Descriptions>
           )}
         </ProCard>
-        <Fabric product={product} className={styles.canvasContainer} />
+        <Fabric
+          product={product}
+          getTypeConfig={this.getTypeConfig}
+          className={styles.canvasContainer}
+        />
       </div>
     );
   }
 }
-export default FabricContainer;
+export default connect(({ defect_type }) => ({
+  types: defect_type.types,
+}))(FabricContainer);

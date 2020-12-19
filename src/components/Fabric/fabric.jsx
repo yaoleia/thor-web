@@ -137,6 +137,7 @@ class Fabric extends React.PureComponent {
   }
 
   addPolygon({ defect_items = [] }) {
+    const { getTypeConfig } = this.props;
     const array = defect_items.map((item) => {
       const temp = this.minValue(item.points);
       const tempValue = item.points.map((item1) => {
@@ -146,8 +147,8 @@ class Fabric extends React.PureComponent {
       return new fabric.Polygon(tempValue, {
         left: temp.left,
         top: temp.top,
+        stroke: getTypeConfig ? getTypeConfig(item.label).color : item.fill_color,
         fill: item.fill_color,
-        stroke: item.line_color,
         strokeWidth: 2,
         selectable: false,
       });
