@@ -273,7 +273,7 @@ const TableList = ({ patterns, dispatch, loading }) => {
     <PageContainer
       extra={
         <Button type="primary" onClick={() => handleDefectTypeModalVisible(true)}>
-          缺陷类型
+          缺陷类型配置
         </Button>
       }
     >
@@ -341,6 +341,7 @@ const TableList = ({ patterns, dispatch, loading }) => {
         modalVisible={defectTypeModalVisible}
         title="缺陷类型配置"
         width="800px"
+        maskClosable={false}
         bodyStyle={{
           height: '60vh',
           overflow: 'auto',
