@@ -300,7 +300,7 @@ const TableList = () => {
         width="70%"
         title={
           <div className="detailModalTitle">
-            <span>检测详情</span>
+            <span>{`检测详情${detailValues.uid ? ` - ${detailValues.uid}` : ''}`}</span>
             {detailValues.indexTemp && (
               <Spin wrapperClassName={styles.nextPrevWrap} spinning={detailLoading}>
                 <Button
@@ -329,7 +329,7 @@ const TableList = () => {
         footer={null}
       >
         <Spin wrapperClassName={styles.detailWrap} spinning={detailLoading}>
-          <FabricContainer product={detailValues}></FabricContainer>
+          <FabricContainer title={null} product={detailValues}></FabricContainer>
         </Spin>
       </Modal>
     </PageContainer>

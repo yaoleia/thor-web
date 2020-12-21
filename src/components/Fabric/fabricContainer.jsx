@@ -20,7 +20,7 @@ class FabricContainer extends React.PureComponent {
   };
 
   render() {
-    const { product } = this.props;
+    const { product, title } = this.props;
     const { defect_items, size_items, size_alarm, defect_alarm } = product;
     const defect_detail = this.getGroup(defect_items);
     const size_detail = this.getGroup(size_items);
@@ -28,12 +28,17 @@ class FabricContainer extends React.PureComponent {
       <div className={styles.fabricContainer}>
         <ProCard colSpan="25%" className={styles.leftMsg}>
           {product.uid && (
-            <Descriptions column={1} layout="vertical" size="middle" title={`ID: ${product.uid}`}>
+            <Descriptions
+              column={1}
+              layout="vertical"
+              size="middle"
+              title={title === undefined ? `ID: ${product.uid}` : title}
+            >
               <Descriptions.Item label="检测时间">
                 {moment(product.time).format('YYYY-MM-DD HH:mm:ss')}
               </Descriptions.Item>
               {defect_detail && (
-                <Descriptions.Item className={styles.defectDetail} label="瑕疵缺陷">
+                <Descriptions.Item className={styles.defectDetail} label="缺陷详情">
                   {Object.keys(defect_detail).map((defect) => (
                     <Tag color={this.getTypeConfig(defect).color} key={defect}>
                       {this.getTypeConfig(defect).name}: {defect_detail[defect].length}
@@ -42,7 +47,7 @@ class FabricContainer extends React.PureComponent {
                 </Descriptions.Item>
               )}
               {size_detail && (
-                <Descriptions.Item className={styles.defectDetail} label="尺寸缺陷">
+                <Descriptions.Item className={styles.defectDetail} label="尺寸详情">
                   {Object.keys(size_detail).map((size) => (
                     <Tag key={size}>
                       {size}: {size_detail[size].length}
@@ -53,7 +58,7 @@ class FabricContainer extends React.PureComponent {
               {typeof defect_alarm === 'boolean' && (
                 <Descriptions.Item>
                   <Card className={defect_alarm ? styles.alarm : styles.ok}>
-                    瑕疵: {defect_alarm ? 'NG' : 'OK'}
+                    缺陷: {defect_alarm ? 'NG' : 'OK'}
                   </Card>
                 </Descriptions.Item>
               )}

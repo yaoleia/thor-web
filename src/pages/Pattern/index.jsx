@@ -376,7 +376,7 @@ const TableList = ({ patterns, dispatch, loading }) => {
             setUpdateValues({});
           }}
           modalVisible={updateModalVisible}
-          title="修改模板"
+          title={`修改模板 - ${updateValues.uid}`}
         >
           <ProTable
             onSubmit={(value) => {

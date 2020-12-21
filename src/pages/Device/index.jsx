@@ -215,7 +215,7 @@ const TableList = ({ devices, dispatch, loading }) => {
         <ModalForm
           onCancel={() => handleUpdateModalVisible(false)}
           modalVisible={updateModalVisible}
-          title="修改设备"
+          title={`修改设备 - ${updateValues.uid}`}
         >
           <ProTable
             onSubmit={async (value) => {
