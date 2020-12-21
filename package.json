@@ -89,7 +89,7 @@
     "umi": "^3.2.14",
     "umi-request": "^1.0.8",
     "use-merge-value": "^1.0.1",
-    "webpack": "^5.11.0",
+    "webpack": "^4.44.2",
     "webpack-merge": "^5.1.4"
   },
   "devDependencies": {
