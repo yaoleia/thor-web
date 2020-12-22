@@ -118,8 +118,7 @@ class Fabric extends React.PureComponent {
 
   init() {
     const canvas = new fabric.Canvas(this.canvasRef.current, {
-      mageSmoothingEnabled: false,
-      enableRetinaScaling: false,
+      enableRetinaScaling: true,
       fireRightClick: true,
       stopContextMenu: true,
       imageSmoothingEnabled: false,
