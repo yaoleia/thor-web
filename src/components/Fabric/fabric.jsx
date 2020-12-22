@@ -173,22 +173,37 @@ class Fabric extends React.PureComponent {
     };
   };
   mouseFunc = (canvas) => {
-    canvas.on('mouse:wheel', (options) => {
-      options.e.preventDefault();
-      let zoom = canvas.getZoom();
-      const delta = options.e.wheelDelta;
-      if (delta !== 0) {
-        if (delta > 0) {
-          zoom += zoom * 0.05;
-          if (zoom > 10) zoom = 10;
-          canvas.zoomToPoint(canvas.getPointer(options, true), zoom);
-        } else if (delta < 0) {
-          zoom -= zoom * 0.05;
-          if (zoom < 0.05) zoom = 0.05;
-          canvas.zoomToPoint(canvas.getPointer(options, true), zoom);
+    canvas
+      .on('mouse:wheel', (options) => {
+        options.e.preventDefault();
+        let zoom = canvas.getZoom();
+        const delta = options.e.wheelDelta;
+        if (delta !== 0) {
+          if (delta > 0) {
+            zoom += zoom * 0.05;
+            if (zoom > 10) zoom = 10;
+            canvas.zoomToPoint(canvas.getPointer(options, true), zoom);
+          } else if (delta < 0) {
+            zoom -= zoom * 0.05;
+            if (zoom < 0.05) zoom = 0.05;
+            canvas.zoomToPoint(canvas.getPointer(options, true), zoom);
+          }
         }
-      }
-    });
+      })
+      .on('mouse:down', (options) => {
+        const pointer = canvas.getPointer(options.e, true);
+        this.mouseDownPoint = new fabric.Point(pointer.x, pointer.y);
+      })
+      .on('mouse:move', (options) => {
+        if (!this.mouseDownPoint) return;
+        const pointer = this.canvas.getPointer(options.e, true);
+        const mouseMovePoint = new fabric.Point(pointer.x, pointer.y);
+        canvas.relativePan(mouseMovePoint.subtract(this.mouseDownPoint));
+        this.mouseDownPoint = mouseMovePoint;
+      })
+      .on('mouse:up', () => {
+        this.mouseDownPoint = null;
+      });
   };
   clearFunc = (e) => {
     const { canvas } = this;
@@ -203,7 +218,7 @@ class Fabric extends React.PureComponent {
   render() {
     const { className } = this.props;
     return (
-      <div ref={this.containerRef} className={className}>
+      <div ref={this.containerRef} className={className} onDoubleClick={() => this.setZoom()}>
         <canvas ref={this.canvasRef} />
       </div>
     );
