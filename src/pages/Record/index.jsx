@@ -200,14 +200,15 @@ const TableList = () => {
           labelWidth: 100,
         }}
         request={async (params) => {
-          const { pageSize, current, time, ...p } = params;
+          const { pageSize, current, time, uid, defect_alarm, size_alarm } = params;
           const paramTemp = {
-            ...p,
             offset: (current - 1) * pageSize,
             limit: pageSize,
             start_date: time && new Date(time[0]).getTime(),
             end_date: time && new Date(time[1]).getTime(),
-            uid: p.uid || undefined,
+            uid: uid || undefined,
+            defect_alarm,
+            size_alarm,
           };
           const msg = await queryRecord(paramTemp);
           msg.data.map((item, index) => {

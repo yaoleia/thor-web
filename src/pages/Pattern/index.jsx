@@ -136,6 +136,7 @@ const TableList = ({ patterns, dispatch, loading }) => {
     {
       title: '模板ID',
       dataIndex: 'uid',
+      order: 8,
       hideInForm: true,
       copyable: true,
       width: 150,
