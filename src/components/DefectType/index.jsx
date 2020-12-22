@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { connect } from 'umi';
 import { EditableProTable } from '@ant-design/pro-table';
 import { SketchPicker } from 'react-color';
-import { Typography, Popover, Button } from 'antd';
+import { Typography, Popover } from 'antd';
 import styles from './style.less';
 
 const { Text } = Typography;
@@ -21,15 +21,9 @@ const ColorPicker = ({ onChange, value }) => {
       }
       trigger="click"
     >
-      <Button type="text" style={{ padding: 0 }}>
-        {value ? (
-          <Text className={styles.colorText} style={{ background: value }} code>
-            {value}
-          </Text>
-        ) : (
-          '请选择颜色'
-        )}
-      </Button>
+      <Text className={styles.colorText} style={{ background: value }} code>
+        {value || '请选择颜色'}
+      </Text>
     </Popover>
   );
 };
