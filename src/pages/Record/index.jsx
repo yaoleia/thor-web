@@ -144,7 +144,7 @@ const TableList = () => {
     {
       title: '创建时间',
       dataIndex: 'time',
-      valueType: 'dateTimeRange',
+      valueType: 'dateRange',
       hideInForm: true,
       render: (_, record) => moment(record.time).format('YYYY-MM-DD HH:mm:ss'),
     },
