@@ -68,11 +68,12 @@ const columns = [
     ],
   },
 ];
-const TypeTable = ({ types, dispatch }) => {
+const TypeTable = ({ types, loading, dispatch }) => {
   const [editableKeys, setEditableRowKeys] = useState([]);
 
   return (
     <EditableProTable
+      loading={loading}
       rowKey="uid"
       recordCreatorProps={{
         position: 'top',
