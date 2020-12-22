@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { PlusOutlined, UploadOutlined, CloseCircleFilled } from '@ant-design/icons';
-import { Button, message, Image, Upload, Divider, Modal, Typography } from 'antd';
+import { Button, message, Image, Upload, Divider, Modal, Typography, Progress } from 'antd';
 import { connect } from 'umi';
 import lodash from 'lodash';
 import moment from 'moment';
@@ -19,15 +19,17 @@ const SampleView = ({ value, onChange }) => {
     data: {
       type: 'sample',
     },
+    accept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg',
     className: styles.sampleUpload,
     showUploadList: false,
     name: 'file',
     action: '/api/upload',
-    onChange(info) {
-      if (info.file.status === 'done') {
-        onChange(lodash.get(info, 'file.response[0].url'));
-      } else if (info.file.status === 'error') {
-        message.error(`${info.file.name} 模板图上传失败！`);
+    onChange({ file: { status, name, response } }) {
+      if (status === 'done') {
+        message.success(`${name} 上传模板图成功`);
+        onChange(lodash.get(response, '[0].url'));
+      } else if (status === 'error') {
+        message.error(`${name} 模板图上传失败！`);
       }
     },
   };
@@ -49,27 +51,34 @@ const SampleView = ({ value, onChange }) => {
 };
 
 const UploadRender = ({ form, value, paramMd5, param }) => {
+  const [percent, setPercent] = useState();
+
+  const handleChange = ({ file: { status, name, response }, event }) => {
+    if (status === 'uploading' && event) {
+      setPercent(parseInt(event.percent, 10));
+    }
+    if (status === 'done') {
+      message.success(`${name} 上传模型成功`);
+      const { url, md5 } = response[0];
+      form.setFieldsValue({
+        [param]: url,
+        [paramMd5]: md5,
+      });
+      setPercent();
+    } else if (status === 'error') {
+      message.error(`${name} 上传模型失败`);
+      setPercent();
+    }
+  };
   return (
     <Dragger
+      accept=".pth"
       className={styles.uploadDragger}
       name="file"
       action="/api/upload"
       showUploadList={false}
-      fileList={[]}
       data={{ md5: true, type: 'pattern' }}
-      onChange={(info) => {
-        const { status } = info.file;
-        if (status === 'done') {
-          message.success(`${info.file.name} 上传模型成功`);
-          const { url, md5 } = info.file.response[0];
-          form.setFieldsValue({
-            [param]: url,
-            [paramMd5]: md5,
-          });
-        } else if (status === 'error') {
-          message.error(`${info.file.name} 上传模型失败`);
-        }
-      }}
+      onChange={handleChange}
     >
       {value && (
         <Paragraph
@@ -98,9 +107,21 @@ const UploadRender = ({ form, value, paramMd5, param }) => {
           />
         </Paragraph>
       )}
-      <Text code className="ant-upload-text">
-        <UploadOutlined /> 点击/拖拽到该区域内上传
-      </Text>
+      {percent ? (
+        <Progress
+          className="ant-upload-text"
+          strokeColor={{
+            from: '#108ee9',
+            to: '#87d068',
+          }}
+          percent={percent}
+          status="active"
+        />
+      ) : (
+        <Text code className="ant-upload-text">
+          <UploadOutlined /> 点击/拖拽到该区域内上传 (.pth)
+        </Text>
+      )}
     </Dragger>
   );
 };
@@ -342,7 +363,6 @@ const TableList = ({ patterns, dispatch, loading }) => {
         modalVisible={defectTypeModalVisible}
         title="缺陷类型配置"
         width="800px"
-        maskClosable={false}
         bodyStyle={{
           height: '60vh',
           overflow: 'auto',
