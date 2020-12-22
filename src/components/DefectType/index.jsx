@@ -3,6 +3,7 @@ import { connect } from 'umi';
 import { EditableProTable } from '@ant-design/pro-table';
 import { SketchPicker } from 'react-color';
 import { Typography, Popover, Button } from 'antd';
+import styles from './style.less';
 
 const { Text } = Typography;
 
@@ -11,6 +12,7 @@ const ColorPicker = ({ onChange, value }) => {
     <Popover
       content={
         <SketchPicker
+          className={styles.colorPicker}
           onChange={({ rgb: { r, g, b, a } }) => {
             onChange(typeof a === 'number' ? `rgba(${r},${g},${b},${a})` : `rgb(${r},${g},${b})`);
           }}
@@ -19,9 +21,9 @@ const ColorPicker = ({ onChange, value }) => {
       }
       trigger="click"
     >
-      <Button type="text">
+      <Button type="text" style={{ padding: 0 }}>
         {value ? (
-          <Text style={{ background: value }} code>
+          <Text className={styles.colorText} style={{ background: value }} code>
             {value}
           </Text>
         ) : (
@@ -51,7 +53,7 @@ const columns = [
     renderFormItem: () => <ColorPicker />,
     render: (_, record) =>
       record.color && (
-        <Text style={{ background: record.color }} code>
+        <Text className={styles.colorText} style={{ background: record.color }} code>
           {record.color}
         </Text>
       ),
