@@ -2,8 +2,11 @@ import { UploadOutlined } from '@ant-design/icons';
 import { Button, Input, Upload, Form, message, Spin } from 'antd';
 import { connect } from 'umi';
 import React, { Component } from 'react';
-import styles from './style.less';
+import ImgCrop from 'antd-img-crop';
+import 'antd/es/modal/style';
+import 'antd/es/slider/style';
 import _ from 'lodash';
+import styles from './style.less';
 
 const AvatarView = ({ avatar, handleFinish }) => {
   const props = {
@@ -13,6 +16,7 @@ const AvatarView = ({ avatar, handleFinish }) => {
     },
     name: 'file',
     action: '/api/upload',
+    accept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg',
     onChange(info) {
       if (info.file.status === 'done') {
         handleFinish({ avatar: _.get(info, 'file.response[0].url') });
@@ -27,14 +31,16 @@ const AvatarView = ({ avatar, handleFinish }) => {
       <div className={styles.avatar}>
         <img src={avatar} alt="avatar" />
       </div>
-      <Upload showUploadList={false} {...props}>
-        <div className={styles.button_view}>
-          <Button>
-            <UploadOutlined />
-            上传新头像
-          </Button>
-        </div>
-      </Upload>
+      <ImgCrop rotate>
+        <Upload showUploadList={false} {...props}>
+          <div className={styles.button_view}>
+            <Button>
+              <UploadOutlined />
+              上传新头像
+            </Button>
+          </div>
+        </Upload>
+      </ImgCrop>
     </>
   );
 };
