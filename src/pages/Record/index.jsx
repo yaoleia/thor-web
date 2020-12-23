@@ -1,6 +1,7 @@
-import { Button, message, Select, Modal, Divider, Badge, Spin } from 'antd';
+import { Button, message, Select, Modal, Divider, Badge, Spin, Image, Tag, Typography } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import moment from 'moment';
+import { connect } from 'umi';
 import hotkeys from 'hotkeys-js';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
@@ -11,6 +12,7 @@ import ModalForm from '@/components/ModalForm';
 import styles from './style.less';
 
 const { Option } = Select;
+const { Text } = Typography;
 
 /**
  *  删除节点
@@ -37,7 +39,7 @@ const handleRemove = async (selectedRows) => {
   }
 };
 
-const TableList = () => {
+const TableList = ({ patterns, devices }) => {
   const [updateModalVisible, handleUpdateModalVisible] = useState(false);
   const [detailModalVisible, handleDetailModalVisible] = useState(false);
   const [stepFormValues, setStepFormValues] = useState({});
@@ -96,6 +98,60 @@ const TableList = () => {
       ellipsis: true,
     },
     {
+      title: '模板名称',
+      dataIndex: 'pattern_uid',
+      valueType: 'text',
+      hideInForm: true,
+      renderFormItem: () => (
+        <Select
+          className={styles.nameSelect}
+          allowClear
+          placeholder="请选择"
+          dropdownClassName="hasUid"
+        >
+          {patterns.map((p) => (
+            <Option value={p.uid} key={p.uid}>
+              <Text ellipsis>{p.name}</Text>
+              {p.sample_image ? (
+                <Image src={p.sample_image} preview={false} width={110} />
+              ) : (
+                <Tag>{p.uid}</Tag>
+              )}
+            </Option>
+          ))}
+        </Select>
+      ),
+      renderText: (_, record) => {
+        const pattern = patterns.find((p) => p.uid === record.pattern.uid);
+        return pattern ? pattern.name : record.pattern.name;
+      },
+    },
+    {
+      title: '设备名称',
+      dataIndex: 'device_uid',
+      valueType: 'text',
+      hideInForm: true,
+      renderFormItem: () => (
+        <Select
+          className={styles.nameSelect}
+          allowClear
+          placeholder="请选择"
+          dropdownClassName="hasUid"
+        >
+          {devices.map((d) => (
+            <Option value={d.uid} key={d.uid}>
+              <Text ellipsis>{d.name}</Text>
+              <Tag>{d.uid}</Tag>
+            </Option>
+          ))}
+        </Select>
+      ),
+      renderText: (_, record) => {
+        const device = devices.find((p) => p.uid === record.device.uid);
+        return device ? device.name : record.device.name;
+      },
+    },
+    {
       title: '缺陷状态',
       dataIndex: 'defect_alarm',
       render: (_, record) =>
@@ -104,8 +160,8 @@ const TableList = () => {
         ) : (
           <Badge status="success" text="OK" />
         ),
-      renderFormItem: (_, record) => (
-        <Select allowClear defaultValue={record.defect_alarm} placeholder="请选择">
+      renderFormItem: () => (
+        <Select allowClear placeholder="请选择">
           <Option value>NG</Option>
           <Option value={false}>OK</Option>
         </Select>
@@ -120,26 +176,12 @@ const TableList = () => {
         ) : (
           <Badge status="success" text="OK" />
         ),
-      renderFormItem: (_, record) => (
-        <Select allowClear defaultValue={record.size_alarm} placeholder="请选择">
+      renderFormItem: () => (
+        <Select allowClear placeholder="请选择">
           <Option value>NG</Option>
           <Option value={false}>OK</Option>
         </Select>
       ),
-    },
-    {
-      title: '模板名称',
-      valueType: 'text',
-      hideInForm: true,
-      search: false,
-      renderText: (_, record) => record.pattern.name,
-    },
-    {
-      title: '设备名称',
-      valueType: 'text',
-      hideInForm: true,
-      search: false,
-      renderText: (_, record) => record.device.name,
     },
     {
       title: '创建时间',
@@ -200,7 +242,16 @@ const TableList = () => {
           labelWidth: 100,
         }}
         request={async (params) => {
-          const { pageSize, current, time, uid, defect_alarm, size_alarm } = params;
+          const {
+            pageSize,
+            current,
+            time,
+            uid,
+            defect_alarm,
+            size_alarm,
+            pattern_uid,
+            device_uid,
+          } = params;
           const paramTemp = {
             offset: (current - 1) * pageSize,
             limit: pageSize,
@@ -209,6 +260,8 @@ const TableList = () => {
             uid: uid || undefined,
             defect_alarm,
             size_alarm,
+            'pattern.uid': pattern_uid || undefined,
+            'device.uid': device_uid || undefined,
           };
           const msg = await queryRecord(paramTemp);
           msg.data.map((item, index) => {
@@ -337,4 +390,7 @@ const TableList = () => {
   );
 };
 
-export default TableList;
+export default connect(({ device, pattern }) => ({
+  devices: device.devices,
+  patterns: pattern.patterns,
+}))(TableList);
