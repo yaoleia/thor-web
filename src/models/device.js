@@ -15,6 +15,7 @@ const DeviceModel = {
   effects: {
     *fetch(_, { call, put }) {
       const resp = yield call(queryDevice);
+      if (!resp) return;
       yield put({
         type: 'queryList',
         payload: Array.isArray(resp.data) ? resp.data : [],

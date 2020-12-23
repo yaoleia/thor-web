@@ -13,6 +13,7 @@ const TypeModel = {
   effects: {
     *fetch(_, { call, put }) {
       const resp = yield call(queryDefectType);
+      if (!resp) return;
       yield put({
         type: 'queryList',
         payload: Array.isArray(resp.data) ? resp.data : [],

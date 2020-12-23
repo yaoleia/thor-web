@@ -263,16 +263,17 @@ const TableList = ({ patterns, devices }) => {
             'pattern.uid': pattern_uid || undefined,
             'device.uid': device_uid || undefined,
           };
-          const msg = await queryRecord(paramTemp);
-          msg.data.map((item, index) => {
+          const resp = await queryRecord(paramTemp);
+          if (!resp) return { success: false };
+          resp.data.map((item, index) => {
             item.indexTemp = index + 1 + (current - 1) * pageSize;
             return item;
           });
-          setDataList(msg.data);
+          setDataList(resp.data);
           return {
-            data: msg.data,
+            data: resp.data,
             success: true,
-            total: msg.meta.total,
+            total: resp.meta.total,
           };
         }}
         columns={columns}

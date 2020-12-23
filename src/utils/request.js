@@ -4,6 +4,9 @@
  */
 import { extend } from 'umi-request';
 import { notification } from 'antd';
+
+const { AbortController } = window;
+
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
   201: '新建或修改数据成功。',
@@ -56,7 +59,20 @@ const request = extend({
 });
 
 request.use(async (ctx, next) => {
-  await next();
+  const { options } = ctx.req;
+  let controller;
+  if (AbortController && !options.signal) {
+    controller = new AbortController();
+    const { signal } = controller;
+    options.signal = signal;
+  }
+  try {
+    await next();
+  } catch (error) {
+    if (controller) {
+      controller.abort();
+    }
+  }
 });
 
 export default request;
