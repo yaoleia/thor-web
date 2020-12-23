@@ -81,6 +81,19 @@ const TableList = ({ patterns, devices }) => {
     };
   }, [dataList, detailValues, detailLoading]);
 
+  const ColSelect = ({ value, onChange, children }) => (
+    <Select
+      defaultValue={value}
+      onChange={onChange}
+      className={styles.nameSelect}
+      allowClear
+      placeholder="请选择"
+      dropdownClassName="hasUid"
+    >
+      {children}
+    </Select>
+  );
+
   const columns = [
     {
       title: '序号',
@@ -103,12 +116,7 @@ const TableList = ({ patterns, devices }) => {
       valueType: 'text',
       hideInForm: true,
       renderFormItem: () => (
-        <Select
-          className={styles.nameSelect}
-          allowClear
-          placeholder="请选择"
-          dropdownClassName="hasUid"
-        >
+        <ColSelect>
           {patterns.map((p) => (
             <Option value={p.uid} key={p.uid}>
               <Text ellipsis>{p.name}</Text>
@@ -119,7 +127,7 @@ const TableList = ({ patterns, devices }) => {
               )}
             </Option>
           ))}
-        </Select>
+        </ColSelect>
       ),
       renderText: (_, record) => {
         const pattern = patterns.find((p) => p.uid === record.pattern.uid);
@@ -132,19 +140,14 @@ const TableList = ({ patterns, devices }) => {
       valueType: 'text',
       hideInForm: true,
       renderFormItem: () => (
-        <Select
-          className={styles.nameSelect}
-          allowClear
-          placeholder="请选择"
-          dropdownClassName="hasUid"
-        >
+        <ColSelect>
           {devices.map((d) => (
             <Option value={d.uid} key={d.uid}>
               <Text ellipsis>{d.name}</Text>
               <Tag>{d.uid}</Tag>
             </Option>
           ))}
-        </Select>
+        </ColSelect>
       ),
       renderText: (_, record) => {
         const device = devices.find((p) => p.uid === record.device.uid);
@@ -161,10 +164,10 @@ const TableList = ({ patterns, devices }) => {
           <Badge status="success" text="OK" />
         ),
       renderFormItem: () => (
-        <Select allowClear placeholder="请选择">
+        <ColSelect>
           <Option value>NG</Option>
           <Option value={false}>OK</Option>
-        </Select>
+        </ColSelect>
       ),
     },
     {
@@ -177,10 +180,10 @@ const TableList = ({ patterns, devices }) => {
           <Badge status="success" text="OK" />
         ),
       renderFormItem: () => (
-        <Select allowClear placeholder="请选择">
+        <ColSelect>
           <Option value>NG</Option>
           <Option value={false}>OK</Option>
-        </Select>
+        </ColSelect>
       ),
     },
     {
@@ -264,7 +267,10 @@ const TableList = ({ patterns, devices }) => {
             'device.uid': device_uid || undefined,
           };
           const resp = await queryRecord(paramTemp);
-          if (!resp) return { success: false };
+          if (!resp) {
+            message.error('查询失败, 请稍后重试！');
+            return { success: false };
+          }
           resp.data.map((item, index) => {
             item.indexTemp = index + 1 + (current - 1) * pageSize;
             return item;
