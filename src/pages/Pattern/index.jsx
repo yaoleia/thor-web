@@ -5,7 +5,7 @@ import { connect } from 'umi';
 import lodash from 'lodash';
 import moment from 'moment';
 import DefectType from '@/components/DefectType';
-import Fabric from '@/components/Fabric/fabric';
+import AsyncFabric from '@/components/Fabric/AsyncFabric';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import ModalForm from '@/components/ModalForm';
@@ -35,7 +35,7 @@ const SampleView = ({ value, onChange }) => {
   };
   return (
     <Dragger {...props}>
-      {value ? <Fabric product={{ thumbnail_url: value, uid: 1 }} /> : <PlusOutlined />}
+      {value ? <AsyncFabric product={{ thumbnail_url: value, uid: 1 }} /> : <PlusOutlined />}
       {value && (
         <CloseCircleFilled
           role="button"

@@ -4,7 +4,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { Tag, Card, Descriptions } from 'antd';
 import ProCard from '@ant-design/pro-card';
-import Fabric from './fabric';
+import AsyncFabric from './AsyncFabric';
 import styles from './style.less';
 
 class FabricContainer extends React.PureComponent {
@@ -72,7 +72,7 @@ class FabricContainer extends React.PureComponent {
             </Descriptions>
           )}
         </ProCard>
-        <Fabric
+        <AsyncFabric
           product={product}
           getTypeConfig={this.getTypeConfig}
           className={styles.canvasContainer}

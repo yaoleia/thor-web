@@ -1,0 +1,8 @@
+import { dynamic } from 'umi';
+export default dynamic({
+  async loader() {
+    // 这里的注释 webpackChunkName 可以指导 webpack 将该组件 HugeA 以这个名字单独拆出去
+    const { default: HugeA } = await import(/* webpackChunkName: "external_fabric" */ './fabric');
+    return HugeA;
+  },
+});
